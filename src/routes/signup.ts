@@ -26,7 +26,7 @@ router.post('/', async (req: Request, res: Response) => {
         };
 
         const created = await userService.createUser(newUser);
-        res.status(201).json(newUser);
+        res.status(201).json(created);
     } catch(err) {
         res.status(400).json({message: 'Error while creating new user', error: err})
     }

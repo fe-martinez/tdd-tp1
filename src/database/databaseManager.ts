@@ -31,7 +31,6 @@ export class UserSQLiteManager {
         });
     }
 
-
     getAllUsers(): Promise<User[]> {
         return new Promise<User[]>((resolve, reject) => {
             this.db.all(queries.getAllUsers, (err, rows) => {
@@ -43,4 +42,18 @@ export class UserSQLiteManager {
             });
         });
     }
+
+    getEmailRow(email: String): Promise<User> {
+        return new Promise<User>((resolve, reject) => {
+            this.db.get(queries.getPassword, [email], (err, row) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve(row as User);
+                }
+            });
+        });
+    }
+
+
 }

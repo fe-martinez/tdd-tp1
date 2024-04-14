@@ -23,4 +23,13 @@ export class UserService {
             throw new Error('Error while creating user: ' + err);
         }
     }
+
+    async getUserLoginData(email: String): Promise<String> {
+        try {
+            const password = (await this.sqliteManager.getEmailRow(email)).password;
+            return password;
+        } catch(err) {
+            throw new Error('Error while reading user: ' + err);
+        }
+    }
 }

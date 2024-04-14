@@ -11,7 +11,7 @@ export class UserSQLiteManager {
 
     createUser(user: Omit<User, 'id'>): Promise<User> {
         return new Promise<User>((resolve, reject) => {
-            this.db.run(queries.createUser, [user.firstName, user.lastName, user.email, user.photo, user.birthDate, user.gender], 
+            this.db.run(queries.createUser, [user.firstName, user.lastName, user.email, user.password, user.photo, user.birthDate, user.gender], 
                 function (err) {
                     if (err) {
                         reject(err);

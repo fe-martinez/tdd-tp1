@@ -26,6 +26,7 @@ export class UserService {
     async getUserPassword(email: String): Promise<String> {
         try {
             const password = (await this.sqliteManager.getEmailRow(email)).password;
+            console.log(password);
             return password;
         } catch(err) {
             throw new Error('Error while reading user: ' + err);

@@ -1,5 +1,6 @@
 import sqlite3, { Database } from "sqlite3";
-import * as queries from './userQueries';
+import * as userQueries from './userQueries';
+import { createHobbiesTableQuery, createUserHobbiesTableQuery } from './userQueries';
 
 export interface User {
     id: number,
@@ -11,17 +12,40 @@ export interface User {
     gender: string, // "male" | "female" | "other"
     hobbies: string[]
 }
-
 export class UserSQLiteManager {
     private db: Database;
 
     constructor() {
         this.db = new sqlite3.Database('db/users.db');
+        this.createTables();
+    }
+
+    private createTables() {
+        const createHobbiesTableQuery = userQueries.createHobbiesTableQuery;
+        const createUserHobbiesTableQuery = userQueries.createUserHobbiesTableQuery;
+
+        // Crear la tabla de usuarios
+        const createUserTableQuery = `
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY,
+                firstName TEXT,
+                lastName TEXT,
+                email TEXT UNIQUE,
+                photo TEXT,
+                birthDate TEXT,
+                gender TEXT
+            )
+        `;
+
+        // Ejecutar las consultas para crear las tablas
+        this.db.run(createUserTableQuery);
+        this.db.run(createHobbiesTableQuery);
+        this.db.run(createUserHobbiesTableQuery);
     }
 
     createUser(user: Omit<User, 'id'>): Promise<User> {
         return new Promise<User>((resolve, reject) => {
-            this.db.run(queries.createUser, [user.firstName, user.lastName, user.email, user.photo, user.birthDate, user.gender], 
+            this.db.run(userQueries.createUser, [user.firstName, user.lastName, user.email, user.photo, user.birthDate, user.gender], 
                 function (err) {
                     if (err) {
                         reject(err);
@@ -44,7 +68,7 @@ export class UserSQLiteManager {
 
     getAllUsers(): Promise<User[]> {
         return new Promise<User[]>((resolve, reject) => {
-            this.db.all(queries.getAllUsers, (err, rows) => {
+            this.db.all(userQueries.getAllUsers, (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {

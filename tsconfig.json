@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES6",                     // Compilar a la versión ECMAScript 6
+    "module": "CommonJS",                // Utilizar módulos CommonJS
+    "outDir": "./dist",                  // Directorio de salida para los archivos compilados
+    "strict": true,                      // Habilitar modo estricto
+    "esModuleInterop": true,             // Habilitar la interoperabilidad de módulos de ECMAScript
+    "resolveJsonModule": true,           // Habilitar la importación de módulos JSON
+    "sourceMap": true                    // Generar mapas de origen para depuración
+  },
+  "include": [
+    "./src/**/*.ts"                     // Incluir archivos TypeScript en el directorio src y sus subdirectorios
+  ],
+  "exclude": [
+    "node_modules"                      // Excluir la carpeta node_modules del proceso de compilación
+  ]
+}

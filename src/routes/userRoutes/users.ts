@@ -16,4 +16,38 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+router.get('/:userId', async (req: Request, res: Response) => {
+  try {
+      const userId = parseInt(req.params.userId);
+      const user = await userService.getUserById(userId);
+      if (user) {
+          res.json(user);
+      } else {
+          res.status(404).json({ message: 'User not found' });
+      }
+  } catch (error) {
+      res.status(500).json({ message: 'Error while getting user', error: (error as Error).message });
+  }
+});
+
+router.post('/follow', async (req: Request, res: Response) => {
+  try {
+    
+    const user = await userService.getUserById(req.body.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    const userIdToFollow = req.body.userIdToFollow;
+
+    const followerUserId = user.id;
+
+    const followedUser = await userService.followUser(userIdToFollow, followerUserId);
+    
+    res.json(followedUser);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al seguir al usuario', error: (error as Error).message });
+  }
+});
+
 export default router;

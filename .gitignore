@@ -7,4 +7,4 @@ dist/
 build/
 
 # Carpeta de dependencias de Node.js
-node_modules/
+node_modules

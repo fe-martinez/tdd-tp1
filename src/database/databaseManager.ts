@@ -41,6 +41,14 @@ export class UserSQLiteManager {
         this.db.run(createUserTableQuery);
         this.db.run(createHobbiesTableQuery);
         this.db.run(createUserHobbiesTableQuery);
+
+        const insertHobbiesQuery = `
+            INSERT OR IGNORE INTO hobbies (name) VALUES (?)
+        `;
+
+        userQueries.availableHobbies.forEach(hobby => {
+            this.db.run(insertHobbiesQuery, [hobby]);
+        });
     }
 
     createUser(user: Omit<User, 'id'>): Promise<User> {

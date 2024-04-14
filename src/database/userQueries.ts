@@ -18,3 +18,11 @@ export const createUserHobbiesTableQuery = `
         PRIMARY KEY (user_id, hobby_id)
     )
 `;
+
+export const availableHobbies = [
+    "Hiking",
+    "Reading",
+    "Cooking",
+    "Running",
+    // ahora cuadno funcione meto mas 
+];

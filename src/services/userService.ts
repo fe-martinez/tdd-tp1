@@ -1,4 +1,4 @@
-import {User} from '../database/databaseManager';
+import {User} from '../model/user';
 import {UserSQLiteManager} from '../database/databaseManager';
 
 export class UserService {

@@ -3,6 +3,7 @@ CREATE TABLE users (
   firstName TEXT,
   lastName TEXT,
   email TEXT,
+  password TEXT,
   photo TEXT,
   birthDate DATE,
   gender TEXT

@@ -1,16 +1,6 @@
 import sqlite3, { Database } from "sqlite3";
 import * as queries from './userQueries';
-
-export interface User {
-    id: number,
-    firstName: string,
-    lastName: string,
-    email: String,
-    photo: string,
-    birthDate: Date,
-    gender: string, // "male" | "female" | "other"
-    hobbies: string[]
-}
+import { User } from '../model/user'; 
 
 export class UserSQLiteManager {
     private db: Database;
@@ -31,10 +21,10 @@ export class UserSQLiteManager {
                             firstName: user.firstName,
                             lastName: user.lastName,
                             email: user.email,
+                            password: user.password,
                             photo: user.photo,
                             birthDate: user.birthDate,
-                            gender: user.gender,
-                            hobbies: []
+                            gender: user.gender
                         });
                     }
                 });

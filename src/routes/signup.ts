@@ -8,7 +8,6 @@ const router = express.Router();
 const userService = new UserService();
 const saltRounds = 10;
 
-
 router.post('/', async (req: Request, res: Response) => {
     try {
 

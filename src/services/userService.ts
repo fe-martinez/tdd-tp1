@@ -1,6 +1,5 @@
 import {User} from '../model/user';
 import {UserSQLiteManager} from '../database/databaseManager';
-
 export class UserService {
     private sqliteManager: UserSQLiteManager;
 
@@ -24,7 +23,7 @@ export class UserService {
         }
     }
 
-    async getUserLoginData(email: String): Promise<String> {
+    async getUserPassword(email: String): Promise<String> {
         try {
             const password = (await this.sqliteManager.getEmailRow(email)).password;
             return password;

@@ -1,11 +1,14 @@
 import express, { Request, Response } from 'express';
 import { generateTokens } from '../middleware/jwt';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
+import bcrypt from 'bcrypt';
 
+const saltRounds = 10;
+const getUserPassword = require('../services/userService');
 const router = express.Router();
 
 // Endpoint de prueba para verificar que la ruta funciona
-router.get('/', (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   const authHeader = req.headers['authorization'];
   const basicAuthString = authHeader && authHeader.split(' ')[1];
 
@@ -18,9 +21,19 @@ router.get('/', (req: Request, res: Response) => {
 
   // Validamos contra la DB
 
-  // Si las credenciales son válidas, generamos un token JWT y un refresh token
-  res.json(generateTokens(username, password));
+  try {
+    let savedPassword = await getUserPassword(username); // Esperamos la resolución de la promesa
+    let hashedPassword = await bcrypt.hash(savedPassword, saltRounds); // Esperamos la resolución de la promesa
+
+    if (await bcrypt.compare(password, hashedPassword)) { // Comparamos los hashes usando bcrypt.compare
+      res.json(generateTokens(username, password));
+    } else {
+      res.sendStatus(HTTPErrorCodes.Unauthorized);
+    }
+  } catch (error) {
+    // Aquí manejas el error si ocurrió algún problema durante la llamada a getUserPassword
+    res.json({ error: 'Error de contraseña' });
+  }
 });
 
 export default router;
-

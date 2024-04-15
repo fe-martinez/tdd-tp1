@@ -1,5 +1,6 @@
 import sqlite3, { Database } from "sqlite3";
 import * as userQueries from './userQueries';
+import * as dbCreationQueries from './dbCreationQueries'
 import { User } from '../model/user'; 
 
 export class UserSQLiteManager {
@@ -7,37 +8,28 @@ export class UserSQLiteManager {
 
     constructor() {
         this.db = new sqlite3.Database('db/users.db');
-        // this.createTables();
+        this.createTables();
     }
 
-    // private createTables() {
-    //     const createHobbiesTableQuery = userQueries.createHobbiesTableQuery;
-    //     const createUserHobbiesTableQuery = userQueries.createUserHobbiesTableQuery;
-    //     const createUserFollowsTableQuery = userQueries.createUserFollowsTableQuery;
-
-
-    //     this.db.run(createUserTableQuery);
-    //     this.db.run(createHobbiesTableQuery);
-    //     this.db.run(createUserHobbiesTableQuery);
-    //     this.db.run(createUserFollowsTableQuery);
-    //     const insertHobbiesQuery = `
-    //         INSERT OR IGNORE INTO hobbies (name) VALUES (?)
-    //     `;
-
-    //     userQueries.availableHobbies.forEach(hobby => {
-    //         this.db.run(insertHobbiesQuery, [hobby]);
-    //     });
-    // }
+    private createTables() {
+        this.db.serialize(() => {
+            this.db.run(dbCreationQueries.createUserTableQuery);
+            this.db.run(dbCreationQueries.createHobbiesTableQuery);
+            this.db.run(dbCreationQueries.createUserHobbiesTableQuery);
+            this.db.run(dbCreationQueries.createUserFollowsTableQuery);
+            dbCreationQueries.availableHobbies.forEach(hobby => {
+                this.db.run(dbCreationQueries.insertHobbiesQuery, [hobby]);
+            });
+        });
+    }
 
     createUser(user: Omit<User, 'id'>): Promise<User> {
         return new Promise<User>((resolve, reject) => {
-            console.log("Antes de correr");
             this.db.run(userQueries.createUser, [user.firstName, user.lastName, user.email, user.password, user.photo, user.birthDate, user.gender], 
                 function (err) {
                     if (err) {
                         reject(err);
                     } else {
-                        console.log("Corrio");
                         resolve({
                             id: this.lastID,
                             firstName: user.firstName,

@@ -22,20 +22,18 @@ router.post('/', async (req: Request, res: Response) => {
 
   // Validamos contra la DB
   try {
-    const savedPassword = userService.getUserPassword(username);
+    const savedPassword = await userService.getUserPassword(username);
     if(!savedPassword) {
-      return res.sendStatus(HTTPErrorCodes.Unauthorized).json({error: "Password not found in db"});
+      return res.sendStatus(HTTPErrorCodes.Unauthorized).json({error: "Email not found in db"});
     }
-
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    if (await bcrypt.compare(password, hashedPassword)) {
+    if (await bcrypt.compare(savedPassword.toString(), hashedPassword)) {
       res.json(generateTokens(username, password));
     } else {
-      res.sendStatus(HTTPErrorCodes.Unauthorized);
+      res.sendStatus(HTTPErrorCodes.Unauthorized).json({error: "Password is not correct"});
     }
   } catch (error) {
-    res.json({ error: 'Error de contraseña' + error });
+    res.json({ error: 'Error de contraseña: ' + error });
   }
 });
 

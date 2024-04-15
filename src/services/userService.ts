@@ -11,7 +11,7 @@ export class UserService {
         try {
             return await this.sqliteManager.getAllUsers();
         } catch (err) {
-            throw new Error('Error while getting users: ' + err);
+            throw err;
         }
     }
 
@@ -19,7 +19,7 @@ export class UserService {
         try {
             return await this.sqliteManager.getUserById(userId);
         } catch (err) {
-            throw new Error('Error while getting user by id: ' + err);
+            throw err;
         }
     }
     
@@ -28,7 +28,7 @@ export class UserService {
         try {
             return await this.sqliteManager.createUser(user);
         } catch(err) {
-            throw new Error('Error while creating user: ' + err);
+            throw err;
         }
     }
 
@@ -46,11 +46,14 @@ export class UserService {
     
     async getUserPassword(email: String): Promise<String> {
         try {
-            const password = (await this.sqliteManager.getEmailRow(email)).password;
-            console.log(password);
-            return password;
+            const user = await this.sqliteManager.getEmailRow(email);
+            if(user) {
+                return user.password;
+            } else {
+                throw new Error('Email not found in the db');
+            }
         } catch(err) {
-            throw new Error('Error while reading user: ' + err);
+            throw err;
         }
     }
 }

@@ -14,7 +14,7 @@ router.post('/', async (req: Request, res: Response) => {
   const basicAuthString = authHeader && authHeader.split(' ')[1];
 
   if (!basicAuthString) {
-    return res.sendStatus(HTTPErrorCodes.Unauthorized);
+    return res.sendStatus(HTTPErrorCodes.Unauthorized).json({ error: "Email not found in db" });;
   }
 
   // Decodificamos el string de autorización
@@ -23,17 +23,17 @@ router.post('/', async (req: Request, res: Response) => {
   // Validamos contra la DB
   try {
     const savedPassword = await userService.getUserPassword(username);
-    if(!savedPassword) {
-      return res.sendStatus(HTTPErrorCodes.Unauthorized).json({error: "Email not found in db"});
-    }
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    if (await bcrypt.compare(savedPassword.toString(), hashedPassword)) {
-      res.json(generateTokens(username, password));
+    if (await bcrypt.compare(password, savedPassword.toString())) {
+      return res.json(generateTokens(username, password));
     } else {
-      res.sendStatus(HTTPErrorCodes.Unauthorized).json({error: "Password is not correct"});
+      return res.status(HTTPErrorCodes.Unauthorized).json({error: "Password is not correct"});
     }
-  } catch (error) {
-    res.json({ error: 'Error de contraseña: ' + error });
+  } catch (err) {
+      let errMessage: string = "Error when searching in database"
+      if(err instanceof Error) {
+        errMessage = err.message;
+      }
+      return res.status(HTTPErrorCodes.InternalServerError).json({message: 'Error during login', error: errMessage})
   }
 });
 

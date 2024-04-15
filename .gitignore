@@ -8,3 +8,6 @@ build/
 
 # Carpeta de dependencias de Node.js
 node_modules
+
+# Base de datos
+db/users.db

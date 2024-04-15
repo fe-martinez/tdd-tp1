@@ -7,46 +7,37 @@ export class UserSQLiteManager {
 
     constructor() {
         this.db = new sqlite3.Database('db/users.db');
-        this.createTables();
+        // this.createTables();
     }
 
-    private createTables() {
-        const createHobbiesTableQuery = userQueries.createHobbiesTableQuery;
-        const createUserHobbiesTableQuery = userQueries.createUserHobbiesTableQuery;
-        const createUserFollowsTableQuery = userQueries.createUserFollowsTableQuery;
+    // private createTables() {
+    //     const createHobbiesTableQuery = userQueries.createHobbiesTableQuery;
+    //     const createUserHobbiesTableQuery = userQueries.createUserHobbiesTableQuery;
+    //     const createUserFollowsTableQuery = userQueries.createUserFollowsTableQuery;
 
-        const createUserTableQuery = `
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY,
-                firstName TEXT,
-                lastName TEXT,
-                email TEXT UNIQUE,
-                photo TEXT,
-                birthDate TEXT,
-                gender TEXT
-            )
-        `;
 
-        this.db.run(createUserTableQuery);
-        this.db.run(createHobbiesTableQuery);
-        this.db.run(createUserHobbiesTableQuery);
-        this.db.run(createUserFollowsTableQuery);
-        const insertHobbiesQuery = `
-            INSERT OR IGNORE INTO hobbies (name) VALUES (?)
-        `;
+    //     this.db.run(createUserTableQuery);
+    //     this.db.run(createHobbiesTableQuery);
+    //     this.db.run(createUserHobbiesTableQuery);
+    //     this.db.run(createUserFollowsTableQuery);
+    //     const insertHobbiesQuery = `
+    //         INSERT OR IGNORE INTO hobbies (name) VALUES (?)
+    //     `;
 
-        userQueries.availableHobbies.forEach(hobby => {
-            this.db.run(insertHobbiesQuery, [hobby]);
-        });
-    }
+    //     userQueries.availableHobbies.forEach(hobby => {
+    //         this.db.run(insertHobbiesQuery, [hobby]);
+    //     });
+    // }
 
     createUser(user: Omit<User, 'id'>): Promise<User> {
         return new Promise<User>((resolve, reject) => {
+            console.log("Antes de correr");
             this.db.run(userQueries.createUser, [user.firstName, user.lastName, user.email, user.password, user.photo, user.birthDate, user.gender], 
                 function (err) {
                     if (err) {
                         reject(err);
                     } else {
+                        console.log("Corrio");
                         resolve({
                             id: this.lastID,
                             firstName: user.firstName,

@@ -25,6 +25,8 @@ router.post('/', async (req: Request, res: Response) => {
             gender: req.body.gender,
         };
 
+        console.log(newUser);
+
         const created = await userService.createUser(newUser);
         res.status(201).json(created);
     } catch(err) {

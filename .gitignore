@@ -1,0 +1,10 @@
+# Archivos de configuración específicos de IDEs
+.idea/
+.vscode/
+
+# Carpetas generadas por compilación
+dist/
+build/
+
+# Carpeta de dependencias de Node.js
+node_modules

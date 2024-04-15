@@ -1,6 +1,5 @@
-import {User} from '../database/databaseManager';
+import {User} from '../model/user';
 import {UserSQLiteManager} from '../database/databaseManager';
-
 export class UserService {
     private sqliteManager: UserSQLiteManager;
 
@@ -32,6 +31,7 @@ export class UserService {
             throw new Error('Error while creating user: ' + err);
         }
     }
+
     async followUser(userIdToFollow: number, followerUserId: number): Promise<void> {
         try {
             // Llama a la función followUser de sqliteManager para agregar la relación de seguidor a seguido.
@@ -44,4 +44,13 @@ export class UserService {
         }
     }
     
+    async getUserPassword(email: String): Promise<String> {
+        try {
+            const password = (await this.sqliteManager.getEmailRow(email)).password;
+            console.log(password);
+            return password;
+        } catch(err) {
+            throw new Error('Error while reading user: ' + err);
+        }
+    }
 }

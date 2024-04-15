@@ -6,20 +6,20 @@ const secretKey = 'tu_clave_secreta'; // Reemplaza esto con tu clave secreta
 const refreshTokens: string[] = []; // Almacena los refresh tokens válidos
 
 // Función para generar un token de acceso
-function generateAccessToken(username: string, password: string): string {
-    return jwt.sign({ username, password }, secretKey, { expiresIn: 15 }); // Token expira en 15 segundos
+function generateAccessToken(id: number, email: string): string {
+    return jwt.sign({ id, email }, secretKey, { expiresIn: 15 }); // Token expira en 15 segundos
 }
 
 // Función para generar un refresh token
-function generateRefreshToken(username: string, password: string): string {
-    const refreshToken = jwt.sign({ username, password }, secretKey); // No especificamos tiempo de expiración
+function generateRefreshToken(id: number, email: string): string {
+    const refreshToken = jwt.sign({ id, email }, secretKey); // No especificamos tiempo de expiración
     refreshTokens.push(refreshToken); // Almacenamos el refresh token válido
     return refreshToken;
 }
 
-function generateTokens(username: string, password: string) {
-    const accessToken = generateAccessToken(username, password);
-    const refreshToken = generateRefreshToken(username, password);
+function generateTokens(id: number, email: string) {
+    const accessToken = generateAccessToken(id, email);
+    const refreshToken = generateRefreshToken(id, email);
     return { accessToken, refreshToken };
 }
 
@@ -31,7 +31,7 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
         return res.sendStatus(HTTPErrorCodes.Unauthorized);
     }
 
-    jwt.verify(token, secretKey, (err, user: any) => {
+    jwt.verify(token, secretKey, (err, user) => {
         if (err && err.name === 'TokenExpiredError') {
             return res.status(HTTPErrorCodes.Unauthorized).json('Token Expired')
         }
@@ -40,7 +40,7 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
             return res.sendStatus(HTTPErrorCodes.Forbidden);
         }
 
-        req.body.username = user.username; 
+        req.body.user = user; 
         next();
     });
 }
@@ -62,7 +62,7 @@ function refreshToken(req: Request, res: Response, next: NextFunction) {
             refreshTokens.splice(index, 1);
         }
 
-        res.json(generateTokens(user.username, user.password));
+        res.json(generateTokens(user.id, user.email));
     });
 }
 

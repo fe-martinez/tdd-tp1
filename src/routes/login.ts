@@ -21,20 +21,25 @@ router.post('/', async (req: Request, res: Response) => {
   const [username, password] = Buffer.from(basicAuthString, 'base64').toString().split(':');
 
   // Validamos contra la DB
-  try {
-    const savedPassword = await userService.getUserPassword(username);
-    if (await bcrypt.compare(password, savedPassword.toString())) {
-      return res.json(generateTokens(username, password));
-    } else {
-      return res.status(HTTPErrorCodes.Unauthorized).json({error: "Password is not correct"});
-    }
-  } catch (err) {
-      let errMessage: string = "Error when searching in database"
-      if(err instanceof Error) {
-        errMessage = err.message;
-      }
-      return res.status(HTTPErrorCodes.InternalServerError).json({message: 'Error during login', error: errMessage})
-  }
+  userService.getUserByEmail(username)
+    .then(user => {
+      if (!user)
+        return res.status(HTTPErrorCodes.Unauthorized).json({ error: "User not found" });
+
+      const userPassword = user.password.toString();
+      return bcrypt.compare(password, userPassword)
+        .then(equal => {
+          if (!equal)
+            return res.status(HTTPErrorCodes.Unauthorized).json({ error: "Password is not correct" });
+
+          const email = user.email.toString();
+          return res.json(generateTokens(user.id, email));
+        })
+    })
+    .catch(err => {
+      const errMessage: string = err.message || "Database error";
+      return res.status(HTTPErrorCodes.InternalServerError).json({ message: 'Error during login', error: errMessage })
+    });
 });
 
 export default router;

@@ -1,7 +1,7 @@
 import sqlite3, { Database } from "sqlite3";
 import * as userQueries from './userQueries';
 import * as dbCreationQueries from './dbCreationQueries'
-import { User } from '../model/user'; 
+import { User } from '../model/user';
 
 export class UserSQLiteManager {
     private db: Database;
@@ -25,7 +25,7 @@ export class UserSQLiteManager {
 
     createUser(user: Omit<User, 'id'>): Promise<User> {
         return new Promise<User>((resolve, reject) => {
-            this.db.run(userQueries.createUser, [user.firstName, user.lastName, user.email, user.password, user.photo, user.birthDate, user.gender], 
+            this.db.run(userQueries.createUser, [user.firstName, user.lastName, user.email, user.password, user.photo, user.birthDate, user.gender],
                 function (err) {
                     if (err) {
                         reject(err);
@@ -47,7 +47,7 @@ export class UserSQLiteManager {
 
     getAllUsers(): Promise<User[]> {
         return new Promise<User[]>((resolve, reject) => {
-            this.db.all(userQueries.getAllUsers, [], (err, rows: User[]) => { 
+            this.db.all(userQueries.getAllUsers, [], (err, rows: User[]) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -56,10 +56,10 @@ export class UserSQLiteManager {
             });
         });
     }
-    
+
     getUserById(userId: number): Promise<User | null> {
         return new Promise<User | null>((resolve, reject) => {
-            this.db.get(userQueries.getUserById, [userId], (err, row: User | undefined) => { 
+            this.db.get(userQueries.getUserById, [userId], (err, row: User | undefined) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -82,7 +82,7 @@ export class UserSQLiteManager {
             });
         });
     }
-    
+
     async followUser(followerId: number, followedId: number): Promise<User> {
         await new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.insertFollowQuery, [followerId, followedId], function (err) {
@@ -93,7 +93,7 @@ export class UserSQLiteManager {
                 }
             });
         });
-    
+
         return new Promise<User>((resolve, reject) => {
             this.db.get(userQueries.getUserById, [followedId], (err, row: User | undefined) => {
                 if (err) {
@@ -120,12 +120,20 @@ export class UserSQLiteManager {
     getEmailRow(email: String): Promise<User> {
         return new Promise<User>((resolve, reject) => {
             this.db.get(userQueries.getPassword, [email], (err, row) => {
-                if(err) {
+                if (err) {
                     reject(err);
                 } else {
                     resolve(row as User);
                 }
             });
         });
+    }
+
+    getUserByEmail(email: String): Promise<User | null> {
+        return new Promise<User | null>((resolve, reject) => {
+            this.db.get(userQueries.getUserByEmail,
+                [email],
+                (err, row: User | undefined) => err ? reject(err) : resolve(row as User || null))
+        })
     }
 }

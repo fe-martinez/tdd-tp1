@@ -17,6 +17,16 @@ export const createUserHobbiesTableQuery = `
     )
 `;
 
+export const createUserFollowsTableQuery = `
+CREATE TABLE IF NOT EXISTS user_follows (
+    id INTEGER PRIMARY KEY,
+    follower_id INTEGER,
+    followed_id INTEGER,
+    FOREIGN KEY (follower_id) REFERENCES users(id),
+    FOREIGN KEY (followed_id) REFERENCES users(id)
+)
+`;
+
 export const availableHobbies = [
     "Hiking",
     "Reading",

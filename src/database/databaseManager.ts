@@ -13,6 +13,7 @@ export class UserSQLiteManager {
     private createTables() {
         const createHobbiesTableQuery = userQueries.createHobbiesTableQuery;
         const createUserHobbiesTableQuery = userQueries.createUserHobbiesTableQuery;
+        const createUserFollowsTableQuery = userQueries.createUserFollowsTableQuery;
 
         const createUserTableQuery = `
             CREATE TABLE IF NOT EXISTS users (
@@ -29,6 +30,7 @@ export class UserSQLiteManager {
         this.db.run(createUserTableQuery);
         this.db.run(createHobbiesTableQuery);
         this.db.run(createUserHobbiesTableQuery);
+        this.db.run(createUserFollowsTableQuery);
 
         const insertHobbiesQuery = `
             INSERT OR IGNORE INTO hobbies (name) VALUES (?)

@@ -47,8 +47,7 @@ export class UserSQLiteManager {
 
     getAllUsers(): Promise<User[]> {
         return new Promise<User[]>((resolve, reject) => {
-            const query = `SELECT * FROM users`;
-            this.db.all(query, [], (err, rows: User[]) => { 
+            this.db.all(userQueries.getAllUsers, [], (err, rows: User[]) => { 
                 if (err) {
                     reject(err);
                 } else {
@@ -60,8 +59,7 @@ export class UserSQLiteManager {
     
     getUserById(userId: number): Promise<User | null> {
         return new Promise<User | null>((resolve, reject) => {
-            const query = `SELECT * FROM users WHERE id = ?`;
-            this.db.get(query, [userId], (err, row: User | undefined) => { 
+            this.db.get(userQueries.getUserById, [userId], (err, row: User | undefined) => { 
                 if (err) {
                     reject(err);
                 } else {
@@ -86,12 +84,8 @@ export class UserSQLiteManager {
     }
     
     async followUser(followerId: number, followedId: number): Promise<User> {
-        const insertFollowQuery = `
-            INSERT INTO user_follows (follower_id, followed_id) VALUES (?, ?)
-        `;
-    
         await new Promise<void>((resolve, reject) => {
-            this.db.run(insertFollowQuery, [followerId, followedId], function (err) {
+            this.db.run(userQueries.insertFollowQuery, [followerId, followedId], function (err) {
                 if (err) {
                     reject(err);
                 } else {
@@ -100,12 +94,8 @@ export class UserSQLiteManager {
             });
         });
     
-        const getUserQuery = `
-            SELECT * FROM users WHERE id = ?
-        `;
-    
         return new Promise<User>((resolve, reject) => {
-            this.db.get(getUserQuery, [followedId], (err, row: User | undefined) => {
+            this.db.get(userQueries.getUserById, [followedId], (err, row: User | undefined) => {
                 if (err) {
                     reject(err);
                 } else if (!row) {

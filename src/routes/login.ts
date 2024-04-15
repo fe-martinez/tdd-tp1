@@ -14,7 +14,7 @@ router.post('/', async (req: Request, res: Response) => {
   const basicAuthString = authHeader && authHeader.split(' ')[1];
 
   if (!basicAuthString) {
-    return res.sendStatus(HTTPErrorCodes.Unauthorized).json({ error: "Email not found in db" });;
+    return res.sendStatus(HTTPErrorCodes.Unauthorized);
   }
 
   // Decodificamos el string de autorización

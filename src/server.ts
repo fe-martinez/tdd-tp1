@@ -24,8 +24,6 @@ app.get('/auth', authenticateToken, (req, res) => {
   res.json({ message: 'User autenticado', username: req.body.username });
 });
 
-
-
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });

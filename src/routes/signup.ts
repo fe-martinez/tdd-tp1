@@ -23,6 +23,7 @@ router.post('/', async (req: Request, res: Response) => {
             photo: '',
             birthDate: req.body.birthDate,
             gender: req.body.gender,
+            hobbies: req.body.hobbies
         };
         const created = await userService.createUser(newUser);
         res.status(201).json(created);

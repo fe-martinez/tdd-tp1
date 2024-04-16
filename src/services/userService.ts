@@ -23,10 +23,22 @@ export class UserService {
         }
     }
 
+    async insertUserHobbies(userID: Number, hobbies: Number[]): Promise<void> {
+        try {
+            hobbies.forEach(hobby => {
+                this.sqliteManager.insertHobby(userID, hobby);
+            })
+        } catch(err) {
+            throw(err);
+        }
+    }
+
 
     async createUser(user: Omit<User, 'id'>): Promise<User> {
         try {
-            return await this.sqliteManager.createUser(user);
+            const createdUser = await this.sqliteManager.createUser(user);
+            await this.insertUserHobbies(createdUser.id, createdUser.hobbies);  
+            return createdUser;
         } catch (err) {
             throw err;
         }

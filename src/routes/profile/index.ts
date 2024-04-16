@@ -3,6 +3,8 @@ import { authenticateToken } from '../../middleware/jwt';
 import sharp from 'sharp';
 import multer from 'multer';
 import fs from 'fs';
+import { UserService } from '../../services/userService';
+import HTTPErrorCodes from '../../utilities/httpErrorCodes';
 
 const router = express.Router();
 
@@ -35,21 +37,30 @@ router.post('/image', upload.single('image'), authenticateToken, (req, res) => {
             if (!fs.existsSync(imagesDirectory))
                 fs.mkdirSync(imagesDirectory, { recursive: true });
 
-            return image.jpeg({ mozjpeg: true, quality: 50 }).toFile(`${imagesDirectory}/${filename}`)
+            const imagePath = `${imagesDirectory}/${filename}`;
+            return image.jpeg({ mozjpeg: true, quality: 50 })
+                .toFile(imagePath)
+                .then(() => new UserService().updateImage(id, imagePath));
         })
         .then(() => res.sendStatus(201))
-        .catch(error => res.status(error.statusCode || 500).send({ message: 'An error occurred while processing the image.', error: error.message || "" }));
+        .catch(error => res.status(error.statusCode || HTTPErrorCodes.InternalServerError).send({ message: 'An error occurred while processing the image.', error: error.message || "" }));
 });
 
 router.get('/image', authenticateToken, (req, res) => {
     const id = req.body.user.id;
-    const filename = `${id}.jpg`;
+    new UserService()
+        .getUserById(id)
+        .then(user => {
+            if (!user) {
+                return res.status(HTTPErrorCodes.NotFound).send('User not found.');
+            }
 
-    if (!fs.existsSync(`${imagesDirectory}/${filename}`)) {
-        return res.status(404).send('No se ha encontrado ninguna imagen.');
-    }
+            if (!fs.existsSync(user.photo)) {
+                return res.status(HTTPErrorCodes.NotFound).send('Image not found for user.');
+            }
 
-    res.sendFile(`${imagesDirectory}/${filename}`, { root: '.' });
+            res.sendFile(user.photo, { root: '.' });
+        })
 });
 
 export default router;

@@ -9,3 +9,5 @@ export const getUserById = `SELECT * FROM users WHERE id = ?`
 export const getUserByEmail = `SELECT * FROM users WHERE email = ?`;
 
 export const insertFollowQuery = `INSERT INTO user_follows (follower_id, followed_id) VALUES (?, ?)`;
+
+export const updateImage = `UPDATE users SET photo = ? WHERE id = ?`;

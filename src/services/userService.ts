@@ -60,4 +60,8 @@ export class UserService {
     async getUserByEmail(email: String): Promise<User | null> {
         return this.sqliteManager.getUserByEmail(email)
     }
+
+    async updateImage(userId: number, image: string): Promise<void> {
+        return this.sqliteManager.updateImage(userId, image);
+    }
 }

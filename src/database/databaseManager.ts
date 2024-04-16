@@ -136,4 +136,10 @@ export class UserSQLiteManager {
                 (err, row: User | undefined) => err ? reject(err) : resolve(row as User || null))
         })
     }
+
+    updateImage(userId: number, image: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.db.run(userQueries.updateImage, [image, userId], err => err ? reject(err) : resolve());
+        });
+    }
 }

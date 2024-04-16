@@ -8,21 +8,21 @@ import HTTPErrorCodes from '../../utilities/httpErrorCodes';
 
 const router = express.Router();
 
-const imagesDirectory = './public/images';
+const photosDirectory = './public/images';
 
 const upload = multer();
 
-router.post('/image', upload.single('image'), authenticateToken, (req, res) => {
+router.post('/photo', upload.single('photo'), authenticateToken, (req, res) => {
 
     if (!req.file) {
-        return res.status(400).send('No se ha enviado ninguna imagen.');
+        return res.status(HTTPErrorCodes.NotFound).send('No photo found in the request.');
     }
 
     const id = req.body.user.id;
     const filename = `${id}.jpg`;
-    const image = sharp(req.file.buffer);
+    const photo = sharp(req.file.buffer);
 
-    image.metadata()
+    photo.metadata()
         .then(metadata => {
             if (!metadata.width || !metadata.height)
                 return Promise.reject({ statusCode: 500 })
@@ -31,22 +31,22 @@ router.post('/image', upload.single('image'), authenticateToken, (req, res) => {
 
             if (!isBetween(128, 1024, metadata.width) || !isBetween(128, 1024, metadata.height)) {
                 const sizeString = `${metadata.width}x${metadata.height}`
-                return Promise.reject({ statusCode: 400, message: `The image must be between 128x128 and 1024x1024 pixels. Actual size: ${sizeString}` });
+                return Promise.reject({ statusCode: 400, message: `The photo must be between 128x128 and 1024x1024 pixels. Actual size: ${sizeString}` });
             }
 
-            if (!fs.existsSync(imagesDirectory))
-                fs.mkdirSync(imagesDirectory, { recursive: true });
+            if (!fs.existsSync(photosDirectory))
+                fs.mkdirSync(photosDirectory, { recursive: true });
 
-            const imagePath = `${imagesDirectory}/${filename}`;
-            return image.jpeg({ mozjpeg: true, quality: 50 })
-                .toFile(imagePath)
-                .then(() => new UserService().updateImage(id, imagePath));
+            const pathToPhoto = `${photosDirectory}/${filename}`;
+            return photo.jpeg({ mozjpeg: true, quality: 50 })
+                .toFile(pathToPhoto)
+                .then(() => new UserService().updatePhoto(id, pathToPhoto));
         })
         .then(() => res.sendStatus(201))
-        .catch(error => res.status(error.statusCode || HTTPErrorCodes.InternalServerError).send({ message: 'An error occurred while processing the image.', error: error.message || "" }));
+        .catch(error => res.status(error.statusCode || HTTPErrorCodes.InternalServerError).send({ message: 'An error occurred while processing the photo.', error: error.message || "" }));
 });
 
-router.get('/image', authenticateToken, (req, res) => {
+router.get('/photo', authenticateToken, (req, res) => {
     const id = req.body.user.id;
     new UserService()
         .getUserById(id)
@@ -56,7 +56,7 @@ router.get('/image', authenticateToken, (req, res) => {
             }
 
             if (!fs.existsSync(user.photo)) {
-                return res.status(HTTPErrorCodes.NotFound).send('Image not found for user.');
+                return res.status(HTTPErrorCodes.NotFound).send('Photo not found for user.');
             }
 
             res.sendFile(user.photo, { root: '.' });

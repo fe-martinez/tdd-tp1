@@ -137,9 +137,9 @@ export class UserSQLiteManager {
         })
     }
 
-    updateImage(userId: number, image: string): Promise<void> {
+    updatePhoto(userId: number, photo: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.db.run(userQueries.updateImage, [image, userId], err => err ? reject(err) : resolve());
+            this.db.run(userQueries.updatePhoto, [photo, userId], err => err ? reject(err) : resolve());
         });
     }
 }

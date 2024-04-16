@@ -51,6 +51,7 @@ router.get('/photo', authenticateToken, (req, res) => {
     getUserPhoto(id, res)
 });
 
+// TODO: este creo que deberia ir a otro lado. Obtiene la imagen de cualquier usuario
 router.get('/photo/:id', authenticateToken, (req, res) => {
     const id = parseInt(req.params.id);
     getUserPhoto(id, res)

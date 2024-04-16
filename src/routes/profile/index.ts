@@ -35,10 +35,21 @@ router.post('/image', upload.single('image'), authenticateToken, (req, res) => {
             if (!fs.existsSync(imagesDirectory))
                 fs.mkdirSync(imagesDirectory, { recursive: true });
 
-            return image.jpeg({ mozjpeg: true, quality: 80 }).toFile(`${imagesDirectory}/${filename}`)
+            return image.jpeg({ mozjpeg: true, quality: 50 }).toFile(`${imagesDirectory}/${filename}`)
         })
         .then(() => res.sendStatus(201))
         .catch(error => res.status(error.statusCode || 500).send({ message: 'An error occurred while processing the image.', error: error.message || "" }));
+});
+
+router.get('/image', authenticateToken, (req, res) => {
+    const id = req.body.user.id;
+    const filename = `${id}.jpg`;
+
+    if (!fs.existsSync(`${imagesDirectory}/${filename}`)) {
+        return res.status(404).send('No se ha encontrado ninguna imagen.');
+    }
+
+    res.sendFile(`${imagesDirectory}/${filename}`, { root: '.' });
 });
 
 export default router;

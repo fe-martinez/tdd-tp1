@@ -76,7 +76,7 @@ export class UserSQLiteManager {
                         };
                         resolve(user);
                     } else {
-                        resolve(null); // Si no se encuentra el usuario, devuelve null
+                        resolve(null); 
                     }
                 }
             });
@@ -117,6 +117,18 @@ export class UserSQLiteManager {
         });
     }
 
+    async getFollowersByUserId(userId: number): Promise<User[]> {
+        return new Promise<User[]>((resolve, reject) => {
+            this.db.all(userQueries.getFollowersByUserIdQuery, [userId], (err, rows: User[]) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+    
     getEmailRow(email: String): Promise<User> {
         return new Promise<User>((resolve, reject) => {
             this.db.get(userQueries.getPassword, [email], (err, row) => {

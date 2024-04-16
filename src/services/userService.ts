@@ -34,15 +34,22 @@ export class UserService {
 
     async followUser(userIdToFollow: number, followerUserId: number): Promise<void> {
         try {
-            // Llama a la función followUser de sqliteManager para agregar la relación de seguidor a seguido.
             await this.sqliteManager.followUser(userIdToFollow, followerUserId);
-            // Si todo salió bien, simplemente resuelve la promesa sin devolver ningún valor específico.
             return Promise.resolve();
         } catch (err) {
-            // En caso de error, lanza una excepción con un mensaje descriptivo.
             throw new Error('Error while following user: ' + err);
         }
     }
+
+    async getFollowersByUserId(userId: number): Promise<User[]> {
+        try {
+            const followers = await this.sqliteManager.getFollowersByUserId(userId);
+            return followers;
+        } catch (error) {
+            throw new Error('Error while getting followers by user ID: ' + error);
+        }
+    }
+    
 
     async getUserPassword(email: String): Promise<String> {
         try {

@@ -35,15 +35,27 @@ router.get('/:userId/profile', async (req: Request, res: Response) => {
 router.post('/follow', authenticateToken,async (req: Request, res: Response) => {
   try {
   
-    const userIdToFollow =req.body.user.id;  ;
+    const followerUserId =req.body.user.id;  ;
 
-    const followerUserId = req.body.userIdToFollow;
+    const userIdToFollow = req.body.userIdToFollow;
 
-    const followedUser = await userService.followUser(userIdToFollow, followerUserId);
+    const followedUser = await userService.followUser(followerUserId, userIdToFollow);
     
     res.json(followedUser);
   } catch (error) {
     res.status(500).json({ message: 'Error al seguir al usuario', error: (error as Error).message });
+  }
+});
+
+router.get('/followers', authenticateToken, async (req: Request, res: Response) => {
+  try {
+      const userId = req.body.user.id; 
+
+      const followers = await userService.getFollowersByUserId(userId);
+
+      res.json(followers);
+  } catch (error) {
+      res.status(500).json({ message: 'Error al obtener los seguidores', error: (error as Error).message });
   }
 });
 

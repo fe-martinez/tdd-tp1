@@ -10,7 +10,7 @@
 
 # Instalación del proyecto
 
-**Windows 10:**
+### Windows 10:
 * Instalación de Node:
     * Ir a la página web de Node.js (https://nodejs.org/en). De ser necesario, puede dirigirse a https://nodejs.org/en/download/package-manager para descargar la versión deseada. Se puede utilizar PowerShell, 0el Símbolo del Sistema (cmd.exe) o la terminal de depuración de JavaScript Visual Studio Code para la instalación, usando Docker o Chocolatey como herramientas de gestión de paquetes.
         * Chocolatey: https://docs.chocolatey.org/en-us/choco/setup
@@ -25,6 +25,16 @@ Por lo general, no necesitará instalar Express ni npx, pero, de ser necesario, 
     * Usando npm: npm install express --save
 * Instalación de npx: si bien npx viene con npm, de ser necesario se puede hacer
     * npm install -g npx
+
+### Linux (Ubuntu):
+* Instalar nvm: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash`
+* Probablemente antes de correr el siguiente comando haya que refrescar la terminal, sino no va a reconocer `nvm`
+* Instalar Node: `nvm install 20`
+* Verificar la instalacion con `node -v` y `npm -v`
+* Instalar Typescript: `npm install -D typescript`
+* Instalar Docker
+* Clonar el repositorio
+* Instalar el resto de las dependencias haciendo `npm install` dentro del directorio del proyecto para instalar el resto de las dependencias: Express, bcrypt, jwt, sqlite3.
 
 # Correr el proyecto
 * Clonar el repositorio

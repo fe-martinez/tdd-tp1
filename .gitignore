@@ -11,3 +11,6 @@ node_modules
 
 # Base de datos
 db/users.db
+
+# Imagenes de usuarios
+public/images

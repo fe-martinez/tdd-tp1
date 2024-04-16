@@ -48,6 +48,23 @@ router.post('/photo', upload.single('photo'), authenticateToken, (req, res) => {
 
 router.get('/photo', authenticateToken, (req, res) => {
     const id = req.body.user.id;
+    getUserPhoto(id, res)
+});
+
+router.get('/photo/:id', authenticateToken, (req, res) => {
+    const id = parseInt(req.params.id);
+    getUserPhoto(id, res)
+});
+
+router.delete('/photo', authenticateToken, (req, res) => {
+    const id = req.body.user.id;
+    new UserService()
+        .updatePhoto(id, "")
+        .then(() => res.sendStatus(204))
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while deleting the photo.'));
+});
+
+function getUserPhoto(id: number, res: Response) {
     new UserService()
         .getUserById(id)
         .then(user => {
@@ -55,12 +72,14 @@ router.get('/photo', authenticateToken, (req, res) => {
                 return res.status(HTTPErrorCodes.NotFound).send('User not found.');
             }
 
-            if (!fs.existsSync(user.photo)) {
+            if (!fs.existsSync(user.photo) || user.photo === "") {
                 return res.status(HTTPErrorCodes.NotFound).send('Photo not found for user.');
             }
 
             res.sendFile(user.photo, { root: '.' });
         })
-});
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while getting the photo.'));
+    
+}
 
 export default router;

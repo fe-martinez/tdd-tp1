@@ -1,5 +1,7 @@
 import express, { Request, Response } from 'express';
 import { UserService } from '../../services/userService';
+import { authenticateToken, refreshToken } from '../../middleware/jwt';
+
 //import { User } from '../../model/user';
 
 const router = express.Router();
@@ -30,17 +32,12 @@ router.get('/:userId/profile', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/follow', async (req: Request, res: Response) => {
+router.post('/follow', authenticateToken,async (req: Request, res: Response) => {
   try {
-    
-    const user = await userService.getUserById(req.body.userId);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
+  
+    const userIdToFollow =req.body.user.id;  ;
 
-    const userIdToFollow = req.body.userIdToFollow;
-
-    const followerUserId = user.id;
+    const followerUserId = req.body.userIdToFollow;
 
     const followedUser = await userService.followUser(userIdToFollow, followerUserId);
     

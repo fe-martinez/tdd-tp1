@@ -7,7 +7,7 @@ const refreshTokens: string[] = []; // Almacena los refresh tokens válidos
 
 // Función para generar un token de acceso
 function generateAccessToken(id: number, email: string): string {
-    return jwt.sign({ id, email }, secretKey, { expiresIn: 15 }); // Token expira en 15 segundos
+    return jwt.sign({ id, email }, secretKey, { expiresIn: 200 }); // Token expira en 15 segundos
 }
 
 // Función para generar un refresh token

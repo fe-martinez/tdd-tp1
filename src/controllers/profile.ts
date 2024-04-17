@@ -7,10 +7,20 @@ import { UserService } from '../services/userService';
 const photosDirectory = './public/images';
 
 function getProfile(req: Request, res: Response) {
-    res.send('Profile');
+    const id = req.body.user.id;
+    new UserService()
+        .getUserById(id)
+        .then(user => {
+            if (!user) {
+                return res.status(HTTPErrorCodes.NotFound).send('User not found.');
+            }
+
+            res.json(user);
+        })
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while getting the user.'));
 }
 
-function updatePhoto(req: Request, res: Response) {
+function updateProfilePhoto(req: Request, res: Response) {
     if (!req.file) {
         return res.status(HTTPErrorCodes.NotFound).send('No photo found in the request.');
     }
@@ -62,7 +72,7 @@ function getProfilePhoto(req: Request, res: Response) {
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while getting the photo.'));
 }
 
-function deletePhoto(req: Request, res: Response) {
+function deleteProfilePhoto(req: Request, res: Response) {
     const id = req.body.user.id;
     new UserService()
         .updatePhoto(id, "")
@@ -70,4 +80,4 @@ function deletePhoto(req: Request, res: Response) {
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while deleting the photo.'));
 }
 
-export default { getProfile, updatePhoto, getProfilePhoto, deletePhoto };
+export default { getProfile, updateProfilePhoto, getProfilePhoto, deleteProfilePhoto };

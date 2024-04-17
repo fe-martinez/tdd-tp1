@@ -1,5 +1,8 @@
 import { User } from '../model/user';
 import { UserSQLiteManager } from '../database/databaseManager';
+import bcrypt from 'bcrypt'
+import { Gender } from '../model/gender';
+const saltRounds = 10;
 
 export class UserService {
     private sqliteManager: UserSQLiteManager;
@@ -70,6 +73,40 @@ export class UserService {
             throw err;
         }
     }
+
+    async changeUserEmailById(id: number, email: string) {
+        try {
+            await this.sqliteManager.changeEmailbyId(id, email);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changeUserFirstNameById(id: number, firstName : string) {
+        try {
+            await this.sqliteManager.changeFirstNamebyId(id, firstName);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changeUserGenderById(id: number, gender : string) {
+        try {
+            await this.sqliteManager.changeGenderbyId(id, gender);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changeUserPasswordById(id: number, newPassword : string) {
+        try {
+            let hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+            await this.sqliteManager.changePasswordbyId(id, hashedPassword);
+        } catch (err) {
+            throw err;
+        }
+    }
+
 
     async getUserByEmail(email: String): Promise<User | null> {
         return this.sqliteManager.getUserByEmail(email)

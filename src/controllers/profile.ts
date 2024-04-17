@@ -6,6 +6,8 @@ import { UserService } from '../services/userService';
 import updateableUserProperties from '../model/updateableUserProperties';
 import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
 import { User } from '../model/user';
+import { getUserById } from '../database/userQueries';
+import { Gender } from '../model/gender';
 
 const photosDirectory = './public/images';
 
@@ -84,36 +86,41 @@ function deleteProfilePhoto(req: Request, res: Response) {
 }
 
 // Función para actualizar el email
-const updateEmail = async (id: number, newEmail: string): Promise<User | null> => {
-    console.log("Updating email");
-    return null;
+const updateEmail = async (id: number, newEmail: string, userService: UserService) => {
+    try {
+        await userService.changeUserEmailById(id, newEmail);
+    } catch (err) {
+        throw err;
+    }
 };
 
-const updatePassword = async (id: number, newPassword: string, userService: UserService): Promise<User | null> => {
-    console.log("Updating password");
-    return null;
-    // try {
-    //     let user = await userService.changeUserEmail(id, newPassword);
-    //     return user;
-    // } catch (err) {
-    //     console.error('Error updating user password:', err);
-    //     throw err;
-    // }
-};
-
-// Función para actualizar el género
-const updateGender  = async (id: number, newGender: string, userService: UserService): Promise<User | null> => {
-    console.log("Updating gender");
-    return null;
+const updatePassword = async (id: number, newPassword: string, userService: UserService) => {
+    try {
+        await userService.changeUserPasswordById(id, newPassword);
+    } catch (err) {
+        throw err;
+    }
 };
 
 // Función para actualizar el género
-const updateFirstName  = async (id: number, newName: string, userService: UserService): Promise<User | null> => {
-    console.log("Updating first name");
-    return null;
+const updateGender  = async (id: number, newGender: string, userService: UserService) => {
+    try {
+        await userService.changeUserGenderById(id, newGender);
+    } catch (err) {
+        throw err;
+    }
 };
 
-const operationsHandlers: Record<string, (id: number, value: string, userService: UserService) => Promise<User | null>> = {
+// Función para actualizar el género
+const updateFirstName  = async (id: number, newName: string, userService: UserService) => {
+    try {
+        await userService.changeUserFirstNameById(id, newName);
+    } catch (err) {
+        throw err;
+    }
+};
+
+const operationsHandlers: Record<string, (id: number, value: string, userService: UserService) => void> = {
     [updateableUserProperties.email]: updateEmail,
     [updateableUserProperties.password]: updatePassword,
     [updateableUserProperties.gender]: updateGender,
@@ -141,12 +148,13 @@ async function updateProfile(req: Request, res: Response) {
         delete updates.user;
     }
 
-    console.log("Id is:",id);
-    console.log("Updates are:",updates);
-
     // Verificar si las operaciones en el cuerpo de la solicitud son válidas
     if (!areOptionsValid(updates)) {
         return res.status(HTTPErrorCodes.BadRequest).json({ error: 'Invalid updates!' });
+    }
+
+    if (!Object.values(Gender).includes(updates.gender as Gender)) {
+        return res.status(HTTPErrorCodes.BadRequest).json({ error: `Invalid gender: ${updates.gender}` });
     }
 
     try {
@@ -159,14 +167,11 @@ async function updateProfile(req: Request, res: Response) {
             }
         }
 
-        // Responder con éxito después de aplicar las actualizaciones
-        return res.status(HTTPSuccessCodes.Ok).json({ message: 'Profile updated successfully' });
+        let user = await userService.getUserById(id);
+        return res.status(HTTPSuccessCodes.Ok).json(user);
     } catch (error) {
-        console.error('Error updating profile:', error);
         return res.status(HTTPErrorCodes.InternalServerError).json({ error: 'An error occurred while updating profile' });
     }
-
-    res.status(HTTPSuccessCodes.Ok).json({message : 'Ok'});
 }
 
 export default { getProfile, updateProfilePhoto, getProfilePhoto, deleteProfilePhoto, updateProfile };

@@ -178,4 +178,73 @@ export class UserSQLiteManager {
             this.db.run(userQueries.updatePhoto, [photo, userId], err => err ? reject(err) : resolve());
         });
     }
+
+    async changeEmailbyId(id: number, email: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.db.run(userQueries.updateEmailById, [email, id], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (this.changes === 0) {
+                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
+                        reject(noChangesError);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    }
+
+    async changeFirstNamebyId(id: number, firstName : string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.db.run(userQueries.updateFirstNameById, [firstName, id], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (this.changes === 0) {
+                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
+                        reject(noChangesError);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    } 
+
+    async changeGenderbyId(id: number, gender : string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.db.run(userQueries.updateGenderById, [gender, id], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (this.changes === 0) {
+                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
+                        reject(noChangesError);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    }
+ 
+    async changePasswordbyId(id: number, newPassword: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        this.db.run(userQueries.updatePasswordById, [newPassword, id], function(err) {
+            if (err) {
+                reject(err);
+            } else {
+                if (this.changes === 0) {
+                    const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
+                    reject(noChangesError);
+                } else {
+                    resolve();
+                }
+            }
+        });
+    });
+}
+
 }

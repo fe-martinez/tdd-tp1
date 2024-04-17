@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/userService';
+import HTTPSuccessCodes from '../utilities/httpSuccessCodes'; 
+import HTTPErrorCodes from '../utilities/httpErrorCodes';
 
 function getAllUsers(req: Request, res: Response) {
     const {firstName, lastName, hobby} = req.query;
@@ -20,4 +22,23 @@ function getUserProfileById(req: Request, res: Response) {
         .catch(err => res.status(500).json({ message: 'Error getting user', error: err }));
 }
 
-export default { getAllUsers, getUserProfileById}
+function followUser(req: Request, res: Response) {
+    const userIdToFollow = parseInt(req.params.id);
+    const followerUserId = req.body.user.id;
+    new UserService()
+        .followUser(followerUserId, userIdToFollow)
+        .then(user => res.status(HTTPSuccessCodes.OK).json(user))
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'Error while following user', error: err}));
+}
+
+function unfollowUser(req: Request, res: Response) {
+    const userIdToUnfollow = parseInt(req.params.id);
+    const followerUserId = req.body.user.id;
+    new UserService()
+      .unfollowUser(followerUserId, userIdToUnfollow)
+      .then(() => res.status(HTTPSuccessCodes.OK).json({message: 'User unfollowed succesfully'}))
+      .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'Error while unfollowing user', error: err}));
+}
+
+
+export default { getAllUsers, getUserProfileById, followUser, unfollowUser}

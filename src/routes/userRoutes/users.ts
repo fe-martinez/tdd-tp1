@@ -10,31 +10,8 @@ const userService = new UserService();
 
 router.get('/', jwt.authenticateToken, controller.getAllUsers);
 router.get('/:id/profile', jwt.authenticateToken, controller.getUserProfileById);
-
-
-router.post('/:id/follow', jwt.authenticateToken, async (req: Request, res: Response) => {
-  try {
-    const userIdToFollow = parseInt(req.params.id);
-    const followerUserId = req.body.user.id;
-    const followedUser = await userService.followUser(followerUserId, userIdToFollow);
-    console.log(followedUser);
-    res.json(followedUser);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al seguir al usuario', error: (error as Error).message });
-  }
-});
-
-
-router.delete('/:id/follow', jwt.authenticateToken, async (req: Request, res: Response) => {
-  try {
-    const userIdToUnfollow = parseInt(req.params.id);
-      const followerUserId = req.body.user.id;
-      await userService.unfollowUser(followerUserId, userIdToUnfollow);
-      res.status(200).json({ message: 'Unfollow successful' });
-  } catch (error) {
-      res.status(500).json({ message: 'Error al dejar de seguir al usuario', error: (error as Error).message });
-  }
-});
+router.post('/:id/follow', jwt.authenticateToken, controller.followUser);
+router.delete('/:id/follow', jwt.authenticateToken, controller.unfollowUser);
 
 // router.get('/followers', authenticateToken, async (req: Request, res: Response) => {
 //   try {

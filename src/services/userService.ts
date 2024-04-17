@@ -32,10 +32,9 @@ export class UserService {
         }
     }
 
-    async followUser(userIdToFollow: number, followerUserId: number): Promise<void> {
+    async followUser(userIdToFollow: number, followerUserId: number): Promise<User> {
         try {
-            await this.sqliteManager.followUser(userIdToFollow, followerUserId);
-            return Promise.resolve();
+            return await this.sqliteManager.followUser(userIdToFollow, followerUserId);
         } catch (err) {
             throw new Error('Error while following user: ' + err);
         }

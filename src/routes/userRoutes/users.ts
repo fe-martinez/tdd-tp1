@@ -32,54 +32,48 @@ router.get('/:userId/profile', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/follow', authenticateToken,async (req: Request, res: Response) => {
+router.post('/:id/follow', authenticateToken, async (req: Request, res: Response) => {
   try {
-  
-    const followerUserId =req.body.user.id;  ;
-
-    const userIdToFollow = req.body.userIdToFollow;
-
+    const userIdToFollow = parseInt(req.params.id);
+    const followerUserId = req.body.user.id;
     const followedUser = await userService.followUser(followerUserId, userIdToFollow);
-    
+    console.log(followedUser);
     res.json(followedUser);
   } catch (error) {
     res.status(500).json({ message: 'Error al seguir al usuario', error: (error as Error).message });
   }
 });
 
-router.delete('/unfollow', authenticateToken, async (req: Request, res: Response) => {
+router.delete('/:id/follow', authenticateToken, async (req: Request, res: Response) => {
   try {
+    const userIdToUnfollow = parseInt(req.params.id);
       const followerUserId = req.body.user.id;
-      console.log("El ID del seguidor es:", followerUserId);
-      const userIdToUnfollow = parseInt(req.body.userIdToUnfollow, 10);
       await userService.unfollowUser(followerUserId, userIdToUnfollow);
-      
       res.status(200).json({ message: 'Unfollow successful' });
   } catch (error) {
       res.status(500).json({ message: 'Error al dejar de seguir al usuario', error: (error as Error).message });
   }
 });
 
+// router.get('/followers', authenticateToken, async (req: Request, res: Response) => {
+//   try {
+//       const userId = req.body.user.id; 
 
-router.get('/followers', authenticateToken, async (req: Request, res: Response) => {
-  try {
-      const userId = req.body.user.id; 
+//       const followers = await userService.getFollowersByUserId(userId);
 
-      const followers = await userService.getFollowersByUserId(userId);
+//       res.json(followers);
+//   } catch (error) {
+//       res.status(500).json({ message: 'Error al obtener los seguidores', error: (error as Error).message });
+//   }
+// });
 
-      res.json(followers);
-  } catch (error) {
-      res.status(500).json({ message: 'Error al obtener los seguidores', error: (error as Error).message });
-  }
-});
-
-router.get('/following', authenticateToken, async (req: Request, res: Response) => {
-  try {
-      const userId = req.body.user.id;
-      const followingUsers = await userService.getFollowingByUserId(userId);
-      res.json(followingUsers);
-  } catch (error) {
-      res.status(500).json({ message: 'Error al obtener los usuarios seguidos', error: (error as Error).message });
-  }
-});
-export default router;
+// router.get('/following', authenticateToken, async (req: Request, res: Response) => {
+//   try {
+//       const userId = req.body.user.id;
+//       const followingUsers = await userService.getFollowingByUserId(userId);
+//       res.json(followingUsers);
+//   } catch (error) {
+//       res.status(500).json({ message: 'Error al obtener los usuarios seguidos', error: (error as Error).message });
+//   }
+// });
+// export default router;

@@ -133,7 +133,7 @@ export class UserSQLiteManager {
                 }
             });
         });
-    
+        
         return new Promise<User>((resolve, reject) => {
             this.db.get(userQueries.getUserById, [followedId], (err, row: User | undefined) => {
                 if (err) {
@@ -141,17 +141,7 @@ export class UserSQLiteManager {
                 } else if (!row) {
                     reject(new Error('Usuario no encontrado'));
                 } else {
-                    const user: User = {
-                        id: row.id,
-                        firstName: row.firstName,
-                        lastName: row.lastName,
-                        email: row.email,
-                        password: row.password,
-                        photo: row.photo,
-                        birthDate: new Date(row.birthDate),
-                        gender: row.gender,
-                    };
-                    resolve(user);
+                    resolve(row as User);
                 }
             });
         });

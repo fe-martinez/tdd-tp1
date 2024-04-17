@@ -12,4 +12,7 @@ router.get('/photo', jwt.authenticateToken, controller.getProfilePhoto);
 router.delete('/photo', jwt.authenticateToken, controller.deleteProfilePhoto);
 router.patch('/', jwt.authenticateToken, controller.updateProfile);
 
+router.get('/followers', jwt.authenticateToken, controller.getFollowers);
+router.get('/following', jwt.authenticateToken, controller.getFollowing);
+
 export default router;

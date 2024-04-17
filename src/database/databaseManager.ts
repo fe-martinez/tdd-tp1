@@ -111,14 +111,54 @@ export class UserSQLiteManager {
                         };
                         resolve(user);
                     } else {
-                        resolve(null); // Si no se encuentra el usuario, devuelve null
+                        resolve(null); 
                     }
                 }
             });
         });
     }
 
+    private async checkIfSameUser(followerId: number, followedId: number): Promise<void> {
+        if (followerId === followedId) {
+            throw new Error('No puedes seguirte a ti mismo');
+        }
+        if (followedId === 0) {
+            throw new Error('No se puede seguir al usuario con ID 0');
+        }
+    }
+
+    async getFollowingByUserId(userId: number): Promise<User[]> {
+        return new Promise<User[]>((resolve, reject) => {
+            this.db.all(userQueries.getFollowingByUserIdQuery, [userId], (err, rows: User[]) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+    
+    private async checkIfAlreadyFollowing(followerId: number, followedId: number): Promise<void> {
+        const alreadyFollowing = await new Promise<boolean>((resolve, reject) => {
+            this.db.get(userQueries.checkFollowQuery, [followerId, followedId], (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(!!row);
+                }
+            });
+        });
+
+        if (alreadyFollowing) {
+            throw new Error('El seguidor ya está siguiendo al usuario');
+        }
+    }
+
     async followUser(followerId: number, followedId: number): Promise<User> {
+        await this.checkIfSameUser(followerId, followedId);
+        await this.checkIfAlreadyFollowing(followerId, followedId);
+    
         await new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.insertFollowQuery, [followerId, followedId], function (err) {
                 if (err) {
@@ -128,31 +168,44 @@ export class UserSQLiteManager {
                 }
             });
         });
-
+        
         return new Promise<User>((resolve, reject) => {
             this.db.get(userQueries.getUserById, [followedId], (err, row: User | undefined) => {
                 if (err) {
                     reject(err);
                 } else if (!row) {
-                    reject(new Error('User not found'));
+                    reject(new Error('Usuario no encontrado'));
                 } else {
-                    const user: User = {
-                        id: row.id,
-                        firstName: row.firstName,
-                        lastName: row.lastName,
-                        email: row.email,
-                        password: row.password,
-                        photo: row.photo,
-                        birthDate: new Date(row.birthDate),
-                        gender: row.gender,
-                        hobbies: []
-                    };
-                    resolve(user);
+                    resolve(row as User);
                 }
             });
         });
     }
-
+        
+    async getFollowersByUserId(userId: number): Promise<User[]> {
+        return new Promise<User[]>((resolve, reject) => {
+            this.db.all(userQueries.getFollowersByUserIdQuery, [userId], (err, rows: User[]) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+    
+    async unfollowUser(followerId: number, userIdToUnfollow: number): Promise<void> {
+        await new Promise<void>((resolve, reject) => {
+            this.db.run(userQueries.deleteFollowQuery, [followerId, userIdToUnfollow], function (err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+    
     getEmailRow(email: String): Promise<User> {
         return new Promise<User>((resolve, reject) => {
             this.db.get(userQueries.getPassword, [email], (err, row) => {

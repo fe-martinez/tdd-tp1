@@ -11,7 +11,8 @@ const userService = new UserService();
 router.get('/', jwt.authenticateToken, controller.getAllUsers);
 router.get('/:id/profile', jwt.authenticateToken, controller.getUserProfileById);
 
-router.post('/follow', jwt.authenticateToken, async (req: Request, res: Response) => {
+
+router.post('/:id/follow', jwt.authenticateToken, async (req: Request, res: Response) => {
   try {
     const userIdToFollow = parseInt(req.params.id);
     const followerUserId = req.body.user.id;
@@ -22,6 +23,7 @@ router.post('/follow', jwt.authenticateToken, async (req: Request, res: Response
     res.status(500).json({ message: 'Error al seguir al usuario', error: (error as Error).message });
   }
 });
+
 
 router.delete('/:id/follow', jwt.authenticateToken, async (req: Request, res: Response) => {
   try {

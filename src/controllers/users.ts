@@ -40,5 +40,21 @@ function unfollowUser(req: Request, res: Response) {
       .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'Error while unfollowing user', error: err}));
 }
 
+function getOtherUserFollowers(req: Request, res: Response) {
+    const userID = parseInt(req.params.id);
+    new UserService()
+        .getFollowersByUserId(userID)
+        .then(followers => res.json(followers))
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'An error ocurred while retrieving followers', error: err}));
+}
 
-export default { getAllUsers, getUserProfileById, followUser, unfollowUser}
+function getOtherUserFollowing(req: Request, res: Response) {
+    const userID = parseInt(req.params.id);
+    new UserService()
+        .getFollowingByUserId(userID)
+        .then(following => res.json(following))
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'An error ocurred while retrieving following', error: err}));
+}
+
+
+export default { getAllUsers, getUserProfileById, followUser, unfollowUser, getOtherUserFollowers, getOtherUserFollowing}

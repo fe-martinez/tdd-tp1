@@ -10,5 +10,6 @@ router.get('/', jwt.authenticateToken, controller.getProfile);
 router.post('/photo', upload.single('photo'), jwt.authenticateToken, controller.updateProfilePhoto);
 router.get('/photo', jwt.authenticateToken, controller.getProfilePhoto);
 router.delete('/photo', jwt.authenticateToken, controller.deleteProfilePhoto);
+router.patch('/', jwt.authenticateToken, controller.updateProfile);
 
 export default router;

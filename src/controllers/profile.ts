@@ -1,8 +1,11 @@
-import e, { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 import sharp from 'sharp';
 import fs from 'fs';
 import { UserService } from '../services/userService';
+import updateableUserProperties from '../model/updateableUserProperties';
+import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
+import { User } from '../model/user';
 
 const photosDirectory = './public/images';
 
@@ -80,4 +83,90 @@ function deleteProfilePhoto(req: Request, res: Response) {
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while deleting the photo.'));
 }
 
-export default { getProfile, updateProfilePhoto, getProfilePhoto, deleteProfilePhoto };
+// Función para actualizar el email
+const updateEmail = async (id: number, newEmail: string): Promise<User | null> => {
+    console.log("Updating email");
+    return null;
+};
+
+const updatePassword = async (id: number, newPassword: string, userService: UserService): Promise<User | null> => {
+    console.log("Updating password");
+    return null;
+    // try {
+    //     let user = await userService.changeUserEmail(id, newPassword);
+    //     return user;
+    // } catch (err) {
+    //     console.error('Error updating user password:', err);
+    //     throw err;
+    // }
+};
+
+// Función para actualizar el género
+const updateGender  = async (id: number, newGender: string, userService: UserService): Promise<User | null> => {
+    console.log("Updating gender");
+    return null;
+};
+
+// Función para actualizar el género
+const updateFirstName  = async (id: number, newName: string, userService: UserService): Promise<User | null> => {
+    console.log("Updating first name");
+    return null;
+};
+
+const operationsHandlers: Record<string, (id: number, value: string, userService: UserService) => Promise<User | null>> = {
+    [updateableUserProperties.email]: updateEmail,
+    [updateableUserProperties.password]: updatePassword,
+    [updateableUserProperties.gender]: updateGender,
+    [updateableUserProperties.firstName]: updateFirstName
+};
+
+const areOptionsValid = (options: any): boolean => {
+    const enumKeys = Object.keys(updateableUserProperties);
+    
+    for (const key in options) {
+        if (!enumKeys.includes(key)) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
+async function updateProfile(req: Request, res: Response) {
+    const userService = new UserService();
+    const updates = req.body;
+    const id = req.body.user.id;
+
+    if ('user' in updates) {
+        delete updates.user;
+    }
+
+    console.log("Id is:",id);
+    console.log("Updates are:",updates);
+
+    // Verificar si las operaciones en el cuerpo de la solicitud son válidas
+    if (!areOptionsValid(updates)) {
+        return res.status(HTTPErrorCodes.BadRequest).json({ error: 'Invalid updates!' });
+    }
+
+    try {
+        // Iterar sobre las opciones válidas y llamar a la función correspondiente para cada una
+        for (const key of Object.keys(updates)) {
+            const update = key as updateableUserProperties;
+            const newValue = updates[update];
+            if (operationsHandlers[update]) {
+                await operationsHandlers[update](id, newValue, userService); // Llama a la función correspondiente
+            }
+        }
+
+        // Responder con éxito después de aplicar las actualizaciones
+        return res.status(HTTPSuccessCodes.Ok).json({ message: 'Profile updated successfully' });
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        return res.status(HTTPErrorCodes.InternalServerError).json({ error: 'An error occurred while updating profile' });
+    }
+
+    res.status(HTTPSuccessCodes.Ok).json({message : 'Ok'});
+}
+
+export default { getProfile, updateProfilePhoto, getProfilePhoto, deleteProfilePhoto, updateProfile };

@@ -12,6 +12,14 @@ export const insertFollowQuery = `INSERT INTO user_follows (follower_id, followe
 
 export const updatePhoto = `UPDATE users SET photo = ? WHERE id = ?`;
 
+export const updateEmailById = `UPDATE users SET email = ? WHERE id = ?`;
+
+export const updateFirstNameById = `UPDATE users SET firstName = ? WHERE id = ?`;
+
+export const updateGenderById = `UPDATE users SET gender = ? WHERE id = ?`;
+
+export const updatePasswordById = `UPDATE users SET password = ? WHERE id = ?`;
+
 export const getAllUsers = 'SELECT u.* FROM users u';
 
 export const getHobbiesSubquery = `

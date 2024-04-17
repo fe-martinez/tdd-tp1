@@ -7,7 +7,17 @@ import { UserService } from '../services/userService';
 const photosDirectory = './public/images';
 
 function getProfile(req: Request, res: Response) {
-    res.send('Profile');
+    const id = req.body.user.id;
+    new UserService()
+        .getUserById(id)
+        .then(user => {
+            if (!user) {
+                return res.status(HTTPErrorCodes.NotFound).send('User not found.');
+            }
+
+            res.json(user);
+        })
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while getting the user.'));
 }
 
 function updatePhoto(req: Request, res: Response) {

@@ -80,4 +80,20 @@ function deleteProfilePhoto(req: Request, res: Response) {
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while deleting the photo.'));
 }
 
-export default { getProfile, updateProfilePhoto, getProfilePhoto, deleteProfilePhoto };
+function getFollowers(req: Request, res: Response) {
+    const userID = req.body.user.id;
+    new UserService()
+        .getFollowersByUserId(userID)
+        .then(followers => res.json(followers))
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'An error ocurred while retrieving followers', error: err}));
+}
+
+function getFollowing(req: Request, res: Response) {
+    const userID = req.body.user.id;
+    new UserService()
+        .getFollowingByUserId(userID)
+        .then(following => res.json(following))
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'An error ocurred while retrieving following', error: err}));
+}
+
+export default { getProfile, updateProfilePhoto, getProfilePhoto, deleteProfilePhoto, getFollowers, getFollowing };

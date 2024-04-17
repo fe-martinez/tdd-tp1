@@ -46,7 +46,7 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
     });
 }
 
-function refreshToken(req: Request, res: Response, next: NextFunction) {
+function refreshToken(req: Request, res: Response) {
     const token: string | undefined = req.body?.refreshToken;
 
     if (!token || !refreshTokens.includes(token)) {

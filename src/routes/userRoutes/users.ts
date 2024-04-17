@@ -55,4 +55,5 @@ router.delete('/:id/follow', jwt.authenticateToken, async (req: Request, res: Re
 //       res.status(500).json({ message: 'Error al obtener los usuarios seguidos', error: (error as Error).message });
 //   }
 // });
-// export default router;
+
+export default router;

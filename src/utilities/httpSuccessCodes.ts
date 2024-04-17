@@ -3,4 +3,4 @@ enum HTTPSuccessCodes {
     CREATED = 201
 }
 
-export default HTTPSuccessCodes
+export default HTTPSuccessCodes;

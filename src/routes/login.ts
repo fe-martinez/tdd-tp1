@@ -1,11 +1,11 @@
 import express from 'express';
 
 import controller from '../controllers/login';
-import { refreshToken } from '../middleware/jwt';
+import jwt from '../middleware/jwt';
 const router = express.Router();
 
 // Endpoint de prueba para verificar que la ruta funciona
 router.post('/', controller.login);
-router.post('/refresh', refreshToken);
+router.post('/refresh', jwt.refreshToken);
 
 export default router;

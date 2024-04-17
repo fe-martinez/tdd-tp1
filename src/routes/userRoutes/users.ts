@@ -7,7 +7,7 @@ const router = express.Router();
 const userService = new UserService();
 
 router.get('/', jwt.authenticateToken, controller.getAllUsers);
-router.get('/:id/profile', controller.getUserProfileById);
+router.get('/:id/profile', jwt.authenticateToken, controller.getUserProfileById);
 
 router.post('/follow', async (req: Request, res: Response) => {
   try {

@@ -10,6 +10,8 @@ export const getUserByEmail = `SELECT * FROM users WHERE email = ?`;
 
 export const insertFollowQuery = `INSERT INTO user_follows (follower_id, followed_id) VALUES (?, ?)`;
 
+export const updatePhoto = `UPDATE users SET photo = ? WHERE id = ?`;
+
 export const getAllUsers = 'SELECT u.* FROM users u';
 
 export const getHobbiesSubquery = `

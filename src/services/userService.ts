@@ -74,4 +74,8 @@ export class UserService {
     async getUserByEmail(email: String): Promise<User | null> {
         return this.sqliteManager.getUserByEmail(email)
     }
+
+    async updatePhoto(userId: number, photo: string): Promise<void> {
+        return this.sqliteManager.updatePhoto(userId, photo);
+    }
 }

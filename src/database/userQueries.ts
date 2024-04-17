@@ -17,3 +17,12 @@ export const getFollowersByUserIdQuery = `
     WHERE uf.followed_id = ?;
 `;
 
+export const deleteFollowQuery = `
+    DELETE FROM user_follows
+    WHERE follower_id = ? AND followed_id = ?;
+`;
+
+export const checkFollowQuery = `
+    SELECT * FROM user_follows
+    WHERE follower_id = ? AND followed_id = ?;
+`;

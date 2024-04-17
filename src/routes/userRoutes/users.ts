@@ -47,6 +47,20 @@ router.post('/follow', authenticateToken,async (req: Request, res: Response) => 
   }
 });
 
+router.delete('/unfollow', authenticateToken, async (req: Request, res: Response) => {
+  try {
+      const followerUserId = req.body.user.id;
+      console.log("El ID del seguidor es:", followerUserId);
+      const userIdToUnfollow = parseInt(req.body.userIdToUnfollow, 10);
+      await userService.unfollowUser(followerUserId, userIdToUnfollow);
+      
+      res.status(200).json({ message: 'Unfollow successful' });
+  } catch (error) {
+      res.status(500).json({ message: 'Error al dejar de seguir al usuario', error: (error as Error).message });
+  }
+});
+
+
 router.get('/followers', authenticateToken, async (req: Request, res: Response) => {
   try {
       const userId = req.body.user.id; 

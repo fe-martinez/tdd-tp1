@@ -50,6 +50,14 @@ export class UserService {
         }
     }
     
+    async unfollowUser(followerId: number, userIdToUnfollow: number): Promise<void> {
+        try {
+            await this.sqliteManager.unfollowUser(followerId, userIdToUnfollow);
+            return Promise.resolve();
+        } catch (err) {
+            throw new Error('Error while unfollowing user: ' + err);
+        }
+    }
 
     async getUserPassword(email: String): Promise<String> {
         try {

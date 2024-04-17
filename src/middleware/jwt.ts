@@ -4,10 +4,11 @@ import HTTPErrorCodes from '../utilities/httpErrorCodes';
 
 const secretKey = 'tu_clave_secreta'; // Reemplaza esto con tu clave secreta
 const refreshTokens: string[] = []; // Almacena los refresh tokens válidos
+const accessTokenExpirationTime = 300; // 5 minutos
 
 // Función para generar un token de acceso
 function generateAccessToken(id: number, email: string): string {
-    return jwt.sign({ id, email }, secretKey, { expiresIn: 15 }); // Token expira en 15 segundos
+    return jwt.sign({ id, email }, secretKey, { expiresIn: accessTokenExpirationTime });
 }
 
 // Función para generar un refresh token
@@ -40,7 +41,7 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
             return res.sendStatus(HTTPErrorCodes.Forbidden);
         }
 
-        req.body.user = user; 
+        req.body.user = user;
         next();
     });
 }

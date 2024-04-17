@@ -7,8 +7,8 @@ const router = express.Router();
 const upload = multer();
 
 router.get('/', jwt.authenticateToken, controller.getProfile);
-router.post('/photo', upload.single('photo'), jwt.authenticateToken, controller.updatePhoto);
+router.post('/photo', upload.single('photo'), jwt.authenticateToken, controller.updateProfilePhoto);
 router.get('/photo', jwt.authenticateToken, controller.getProfilePhoto);
-router.delete('/photo', jwt.authenticateToken, controller.deletePhoto);
+router.delete('/photo', jwt.authenticateToken, controller.deleteProfilePhoto);
 
 export default router;

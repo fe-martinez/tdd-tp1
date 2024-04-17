@@ -168,7 +168,7 @@ async function updateProfile(req: Request, res: Response) {
         }
 
         let user = await userService.getUserById(id);
-        return res.status(HTTPSuccessCodes.Ok).json(user);
+        return res.status(HTTPSuccessCodes.OK).json(user);
     } catch (error) {
         return res.status(HTTPErrorCodes.InternalServerError).json({ error: 'An error occurred while updating profile' });
     }

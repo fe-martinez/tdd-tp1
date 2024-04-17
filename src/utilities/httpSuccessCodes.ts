@@ -1,6 +1,6 @@
 enum HTTPSuccessCodes {
-    Ok = 200,
-    Created = 201
+    OK = 200,
+    CREATED = 201
 }
 
 export default HTTPSuccessCodes;

@@ -26,3 +26,10 @@ export const checkFollowQuery = `
     SELECT * FROM user_follows
     WHERE follower_id = ? AND followed_id = ?;
 `;
+
+export const getFollowingByUserIdQuery = `
+    SELECT u.id, u.firstName, u.lastName, u.email, u.password, u.photo, u.birthDate, u.gender
+    FROM users u
+    INNER JOIN user_follows uf ON u.id = uf.followed_id
+    WHERE uf.follower_id = ?;
+`;

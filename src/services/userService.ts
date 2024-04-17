@@ -59,6 +59,14 @@ export class UserService {
         }
     }
 
+    async getFollowingByUserId(userId: number): Promise<User[]> {
+        try {
+            return await this.sqliteManager.getFollowingByUserId(userId);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async getUserPassword(email: String): Promise<String> {
         try {
             const user = await this.sqliteManager.getEmailRow(email);

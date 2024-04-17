@@ -92,6 +92,18 @@ export class UserSQLiteManager {
         }
     }
 
+    async getFollowingByUserId(userId: number): Promise<User[]> {
+        return new Promise<User[]>((resolve, reject) => {
+            this.db.all(userQueries.getFollowingByUserIdQuery, [userId], (err, rows: User[]) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+    
     private async checkIfAlreadyFollowing(followerId: number, followedId: number): Promise<void> {
         const alreadyFollowing = await new Promise<boolean>((resolve, reject) => {
             this.db.get(userQueries.checkFollowQuery, [followerId, followedId], (err, row) => {

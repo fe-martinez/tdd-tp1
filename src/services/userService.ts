@@ -1,5 +1,6 @@
 import { User } from '../model/user';
 import { UserSQLiteManager } from '../database/databaseManager';
+
 export class UserService {
     private sqliteManager: UserSQLiteManager;
 
@@ -7,9 +8,10 @@ export class UserService {
         this.sqliteManager = new UserSQLiteManager();
     }
 
-    async getAllUsers(): Promise<User[]> {
+    async getUsers(firstName?: string, lastName?: string, hobby?: Number): Promise<User[]> {
         try {
-            return await this.sqliteManager.getAllUsers();
+            let users = await this.sqliteManager.getUsers(firstName, lastName, hobby);
+            return users;
         } catch (err) {
             throw err;
         }

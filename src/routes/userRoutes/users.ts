@@ -8,8 +8,13 @@ const userService = new UserService();
 // Async permite una sintaxis mas linda para trabajar con Promises
 // Ahora, no se si es lo correcto o no usarlo asi.
 router.get('/', async (req: Request, res: Response) => {
+  const {firstName, lastName, hobby} = req.query;
+
   try {
-    const users = await userService.getAllUsers();
+    const users = await userService.getUsers(
+      firstName ? firstName as string : undefined,
+      lastName ? lastName as string : undefined, 
+      hobby ? parseInt(hobby as string) : undefined);
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Error getting users', error: err });

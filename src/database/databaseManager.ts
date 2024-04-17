@@ -58,9 +58,42 @@ export class UserSQLiteManager {
         });
     }
 
-    getAllUsers(): Promise<User[]> {
+    getUsers(firstName?: string, lastName?: string, hobby?: Number): Promise<User[]> {
+        let query = `
+        SELECT u.*
+        FROM users u
+      `;
+        let params = [];
+
+        if (hobby) {
+            query += `
+              INNER JOIN (
+                SELECT user_id
+                FROM user_hobbies
+                WHERE hobby_id = ?
+              ) uh ON u.id = uh.user_id
+            `;
+            params.push(hobby);
+          }
+
+        if(firstName || lastName) {
+            query += ' WHERE';
+        if (firstName) {
+            query += ' u.firstName LIKE ?';
+            params.push(`%${firstName}%`);
+        }
+        if (lastName) {
+            query += firstName ? ' AND' : '';
+            query += ' u.lastName LIKE ?';
+            params.push(`%${lastName}%`);
+        }
+        }
+
+        console.log(query);
+        console.log(params);
+
         return new Promise<User[]>((resolve, reject) => {
-            this.db.all(userQueries.getAllUsers, [], (err, rows: User[]) => {
+            this.db.all(query, params, (err, rows: User[]) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -69,6 +102,51 @@ export class UserSQLiteManager {
             });
         });
     }
+
+    // IDEA 1:  * Obtener vector de ids filtrados por nombre
+    //          * Obtener vector de ids filtrados por hobby
+    //          * Pasarle el vector de la interseccion entre ambos a un WHERE
+    // getUsersIdsByName(firstName?: string, lastName?: string): Promise<Number[]> {
+    //     let query = userQueries.getAllUsersIDs;
+    //     let params = [];
+
+    //     if(firstName) {
+    //         query += userQueries.filterFirstName;
+    //         params.push(`%${firstName}%`);
+    //     }
+
+    //     if(lastName) {
+    //         query += userQueries.filterLastName;
+    //         params.push(`%${lastName}%`);
+    //     }
+
+    //     console.log(query);
+    //     console.log(params);
+
+    //     return new Promise<Number[]>((resolve, reject) => {
+    //         this.db.all(query, params, (err, rows: Number[]) => {
+    //             if (err) {
+    //                 reject(err);
+    //             } else {
+    //                 resolve(rows);
+    //             }
+    //         });
+    //     });
+    // }
+
+    // getUsersIDsByHobby(hobby_id: Number): Promise<Number[]> {
+    //     return new Promise<Number[]>((resolve, reject) => {
+    //         this.db.all(userQueries.getUsersIDbyHobbyID, [hobby_id], (err, rows: Number[]) => {
+    //             if(err) {
+    //                 reject(err);
+    //             } else {
+    //                 resolve(rows);
+    //             }
+    //         })
+    //     })
+    // }
+
+    // getAllUsersByIds(usersIds: Number[])
 
     getUserById(userId: number): Promise<User | null> {
         return new Promise<User | null>((resolve, reject) => {

@@ -10,7 +10,12 @@ export const getUserByEmail = `SELECT * FROM users WHERE email = ?`;
 
 export const insertFollowQuery = `INSERT INTO user_follows (follower_id, followed_id) VALUES (?, ?)`;
 
-export const getAllUsersIDs = 'SELECT id FROM users WHERE 1=1';
-export const filterFirstName = ' AND firstName LIKE ?';
-export const filterLastName = ' AND lastName LIKE ?';
-export const getUsersIDbyHobbyID = 'SELECT user_id FROM user_hobbies WHERE hobby_id = ?'
+export const getAllUsers = 'SELECT u.* FROM users u';
+
+export const getHobbiesSubquery = `
+INNER JOIN (
+  SELECT user_id
+  FROM user_hobbies
+  WHERE hobby_id = ?
+) uh ON u.id = uh.user_id
+`;

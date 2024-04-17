@@ -23,6 +23,18 @@ export class UserSQLiteManager {
         });
     }
 
+    insertHobby(userID: Number, hobby: Number): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.db.run(userQueries.insertHobby, [userID, hobby], (err) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        }); 
+    }
+
     createUser(user: Omit<User, 'id'>): Promise<User> {
         return new Promise<User>((resolve, reject) => {
             this.db.run(userQueries.createUser, [user.firstName, user.lastName, user.email, user.password, user.photo, user.birthDate, user.gender],
@@ -38,16 +50,38 @@ export class UserSQLiteManager {
                             password: user.password,
                             photo: user.photo,
                             birthDate: user.birthDate,
-                            gender: user.gender
+                            gender: user.gender,
+                            hobbies: user.hobbies
                         });
                     }
                 });
         });
     }
 
-    getAllUsers(): Promise<User[]> {
+    getUsers(firstName?: string, lastName?: string, hobby?: Number): Promise<User[]> {
+        let query = userQueries.getAllUsers;
+        let params = [];
+
+        if (hobby) {
+            query += userQueries.getHobbiesSubquery;
+            params.push(hobby);
+          }
+
+        if(firstName || lastName) {
+            query += ' WHERE';
+            if (firstName) {
+                query += ' u.firstName LIKE ?';
+                params.push(`%${firstName}%`);
+            }
+            if (lastName) {
+                query += firstName ? ' AND' : '';
+                query += ' u.lastName LIKE ?';
+                params.push(`%${lastName}%`);
+            }
+        }
+
         return new Promise<User[]>((resolve, reject) => {
-            this.db.all(userQueries.getAllUsers, [], (err, rows: User[]) => {
+            this.db.all(query, params, (err, rows: User[]) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -73,6 +107,7 @@ export class UserSQLiteManager {
                             photo: row.photo,
                             birthDate: new Date(row.birthDate),
                             gender: row.gender,
+                            hobbies: []
                         };
                         resolve(user);
                     } else {
@@ -189,5 +224,11 @@ export class UserSQLiteManager {
                 [email],
                 (err, row: User | undefined) => err ? reject(err) : resolve(row as User || null))
         })
+    }
+
+    updatePhoto(userId: number, photo: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.db.run(userQueries.updatePhoto, [photo, userId], err => err ? reject(err) : resolve());
+        });
     }
 }

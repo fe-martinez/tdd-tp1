@@ -1,5 +1,6 @@
 import { User } from '../model/user';
 import { UserSQLiteManager } from '../database/databaseManager';
+
 export class UserService {
     private sqliteManager: UserSQLiteManager;
 
@@ -7,9 +8,10 @@ export class UserService {
         this.sqliteManager = new UserSQLiteManager();
     }
 
-    async getAllUsers(): Promise<User[]> {
+    async getUsers(firstName?: string, lastName?: string, hobby?: Number): Promise<User[]> {
         try {
-            return await this.sqliteManager.getAllUsers();
+            let users = await this.sqliteManager.getUsers(firstName, lastName, hobby);
+            return users;
         } catch (err) {
             throw err;
         }
@@ -23,10 +25,22 @@ export class UserService {
         }
     }
 
+    async insertUserHobbies(userID: Number, hobbies: Number[]): Promise<void> {
+        try {
+            hobbies.forEach(hobby => {
+                this.sqliteManager.insertHobby(userID, hobby);
+            })
+        } catch(err) {
+            throw(err);
+        }
+    }
+
 
     async createUser(user: Omit<User, 'id'>): Promise<User> {
         try {
-            return await this.sqliteManager.createUser(user);
+            const createdUser = await this.sqliteManager.createUser(user);
+            await this.insertUserHobbies(createdUser.id, createdUser.hobbies);  
+            return createdUser;
         } catch (err) {
             throw err;
         }
@@ -81,5 +95,9 @@ export class UserService {
 
     async getUserByEmail(email: String): Promise<User | null> {
         return this.sqliteManager.getUserByEmail(email)
+    }
+
+    async updatePhoto(userId: number, photo: string): Promise<void> {
+        return this.sqliteManager.updatePhoto(userId, photo);
     }
 }

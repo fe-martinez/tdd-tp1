@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
-import { UserService } from '../../services/userService';
+import { UserService } from '../services/userService';
 
 //import { User } from '../../model/user';
-import controller from '../../controllers/users';
-import jwt from '../../middleware/jwt';
+import controller from '../controllers/users';
+import jwt from '../middleware/jwt';
 
 const router = express.Router();
 const userService = new UserService();

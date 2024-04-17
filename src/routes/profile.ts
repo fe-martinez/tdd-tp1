@@ -1,7 +1,7 @@
 import express from 'express';
-import jwt from '../../middleware/jwt';
+import jwt from '../middleware/jwt';
 import multer from 'multer';
-import controller from '../../controllers/profile';
+import controller from '../controllers/profile';
 
 const router = express.Router();
 const upload = multer();

@@ -4,13 +4,14 @@ import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 
 function getAllUsers(req: Request, res: Response) {
-    const {firstName, lastName, hobby} = req.query;
+    const {firstName, lastName, hobby, page} = req.query;
 
     new UserService()
         .getUsers(      
             firstName ? firstName as string : undefined,
             lastName ? lastName as string : undefined, 
-            hobby ? parseInt(hobby as string) : undefined)
+            hobby ? parseInt(hobby as string) : undefined,
+            page ? parseInt(page as string) : undefined)
         .then(users => res.json(users))
         .catch(err => res.status(500).json({ message: 'Error getting users', error: err }));
 }

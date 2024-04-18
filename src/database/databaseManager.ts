@@ -3,6 +3,8 @@ import * as userQueries from './userQueries';
 import * as dbCreationQueries from './dbCreationQueries'
 import { User } from '../model/user';
 
+const PAGE_SIZE = 20;
+
 export class UserSQLiteManager {
     private db: Database;
 
@@ -58,7 +60,7 @@ export class UserSQLiteManager {
         });
     }
 
-    getUsers(firstName?: string, lastName?: string, hobby?: Number): Promise<User[]> {
+    getUsers(firstName?: string, lastName?: string, hobby?: Number, page: number = 1, ): Promise<User[]> {
         let query = userQueries.getAllUsers;
         let params = [];
 
@@ -79,6 +81,10 @@ export class UserSQLiteManager {
                 params.push(`%${lastName}%`);
             }
         }
+
+        query += ' ORDER BY u.id'
+        query += ' LIMIT ? OFFSET ?';
+        params.push(PAGE_SIZE, (page - 1) * PAGE_SIZE)
 
         return new Promise<User[]>((resolve, reject) => {
             this.db.all(query, params, (err, rows: User[]) => {

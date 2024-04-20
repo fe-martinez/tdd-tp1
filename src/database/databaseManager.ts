@@ -304,6 +304,26 @@ export class UserSQLiteManager {
             }
         });
     });
-}
+    }
+
+    async getAllHobbies(): Promise<string[]> {
+        return new Promise<string[]>((resolve, reject) => {
+            this.db.all(userQueries.getAllHobbiesQuery, (err, rows: { id: number; name: string }[]) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const hobbies = rows.map(row => `${row.id}: ${row.name}`);
+                    resolve(hobbies);
+                }
+            });
+        });
+    }
+    
+    
+    
+    
+    
+    
+
 
 }

@@ -57,5 +57,12 @@ function getOtherUserFollowing(req: Request, res: Response) {
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'An error ocurred while retrieving following', error: err}));
 }
 
+function getAllHobbies(req: Request, res: Response) {
+    new UserService()
+        .getAllHobbies()
+        .then(hobbies => res.json(hobbies))
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({ message: 'An error occurred while retrieving hobbies', error: err }));
+}
 
-export default { getAllUsers, getUserProfileById, followUser, unfollowUser, getOtherUserFollowers, getOtherUserFollowing}
+
+export default { getAllUsers, getUserProfileById, followUser, unfollowUser, getOtherUserFollowers, getOtherUserFollowing, getAllHobbies}

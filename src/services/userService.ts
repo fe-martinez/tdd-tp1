@@ -153,4 +153,13 @@ export class UserService {
     async updatePhoto(userId: number, photo: string): Promise<void> {
         return this.sqliteManager.updatePhoto(userId, photo);
     }
+
+    async getAllHobbies(): Promise<string[]> {
+        try {
+            const hobbies = await this.sqliteManager.getAllHobbies();
+            return hobbies;
+        } catch (err) {
+            throw err;
+        }
+    }
 }

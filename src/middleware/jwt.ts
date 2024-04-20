@@ -96,7 +96,6 @@ function verifyAccessToken(token: string): TokenInfo {
 
 function verifyRefreshToken(token: string): TokenInfo {
     const tokenInfo = verifyToken(token);
-    console.log(refreshTokens);
     if (!tokenInfo.isRefresh || !refreshTokens.includes(token)) {
         throw new InvalidTokenError();
     }

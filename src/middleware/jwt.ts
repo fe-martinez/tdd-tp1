@@ -5,7 +5,7 @@ import { Token, TokenInfo } from '../model/token';
 import { InvalidTokenError } from './errors';
 
 const secretKey = 'tu_clave_secreta'; // Reemplaza esto con tu clave secreta
-const refreshTokenById: { [key: number]: string } = {}; // Almacena los refresh tokens válidos
+const refreshTokens: string[] = []; // Almacena los refresh tokens válidos
 const accessTokenExpirationTime = 300; // 5 minutos
 
 function generateAccessToken(id: number, email: string): string {
@@ -13,9 +13,16 @@ function generateAccessToken(id: number, email: string): string {
 }
 
 function generateRefreshToken(id: number, email: string): string {
-    const refreshToken = jwt.sign({ id, email, isRefresh: true }, secretKey); // No especificamos tiempo de expiración
-    refreshTokenById[id] = refreshToken; // Almacenamos el refresh token válido
+    const refreshToken = jwt.sign({ id, email, isRefresh: true, date: Date.now() }, secretKey); // No especificamos tiempo de expiración
+    refreshTokens.push(refreshToken); // Almacenamos el refresh token válido
     return refreshToken;
+}
+
+function consumeRefreshToken(token: string) {
+    const index = refreshTokens.indexOf(token);
+    if (index !== -1) {
+        refreshTokens.splice(index, 1);
+    }
 }
 
 function generateTokens(id: number, email: string): Token {
@@ -89,10 +96,11 @@ function verifyAccessToken(token: string): TokenInfo {
 
 function verifyRefreshToken(token: string): TokenInfo {
     const tokenInfo = verifyToken(token);
-    if (!tokenInfo.isRefresh || refreshTokenById[tokenInfo.id] !== token) {
+    console.log(refreshTokens);
+    if (!tokenInfo.isRefresh || !refreshTokens.includes(token)) {
         throw new InvalidTokenError();
     }
-    delete refreshTokenById[tokenInfo.id];
+    consumeRefreshToken(token);
     return tokenInfo;
 }
 

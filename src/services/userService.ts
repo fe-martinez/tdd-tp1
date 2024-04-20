@@ -11,6 +11,23 @@ export class UserService {
         this.sqliteManager = new UserSQLiteManager();
     }
 
+    async parseUser(reqBody: any): Promise<Omit<User, 'id'>> {
+        try {
+            return {
+                firstName: reqBody.firstName,
+                lastName: reqBody.lastName,
+                email: reqBody.email,
+                password: await bcrypt.hash(reqBody.password, saltRounds),
+                photo: '',
+                birthDate: reqBody.birthDate,
+                gender: reqBody.gender,
+                hobbies: reqBody.hobbies
+            }
+        } catch {
+            throw new Error('Error while parsing user');
+        }
+    }
+
     async getUsers(firstName?: string, lastName?: string, hobby?: Number, page?: number): Promise<User[]> {
         try {
             let users = await this.sqliteManager.getUsers(firstName, lastName, hobby, page);
@@ -128,7 +145,6 @@ export class UserService {
             throw err;
         }
     }
-
 
     async getUserByEmail(email: String): Promise<User | null> {
         return this.sqliteManager.getUserByEmail(email)

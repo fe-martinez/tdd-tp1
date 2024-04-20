@@ -32,7 +32,7 @@ export class PhotoUploader {
         this.filename = filename;
     }
 
-    async validatePhoto() {
+    async validatePhoto(): Promise<void> {
         return this.photo.metadata()
             .then(({ width, height, size }) => {
                 validateSizeInPixels(width || 0, height || 0);

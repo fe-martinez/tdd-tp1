@@ -136,12 +136,12 @@ export class UserService {
     }
 
     async updatePhoto(userId: number, file: Buffer, filename: string): Promise<void> {
-        new PhotoUploader(file, filename)
+        return new PhotoUploader(file, filename)
             .uploadPhoto()
             .then(async (path) => this.sqliteManager.updatePhoto(userId, path))
     }
 
     async deletePhoto(userId: number): Promise<void> {
-        this.sqliteManager.updatePhoto(userId, "");
+        return this.sqliteManager.updatePhoto(userId, "");
     }
 }

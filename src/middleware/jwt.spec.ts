@@ -50,3 +50,12 @@ describe('when verify refresh token as access token', () => {
         expect(verifyRefresh).toThrow(InvalidTokenError);
     })
 });
+
+describe('when verify same refresh token twice', () => {
+    it('should throw error', () => {
+        const { refreshToken } = jwt.generateTokens(1, MAIL);
+        jwt.verifyRefreshToken(refreshToken);
+        const verifyRefresh = () => jwt.verifyRefreshToken(refreshToken);
+        expect(verifyRefresh).toThrow(InvalidTokenError);
+    })
+});

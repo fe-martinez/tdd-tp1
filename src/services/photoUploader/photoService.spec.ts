@@ -2,7 +2,7 @@ import { PhotoUploader } from ".";
 import { InvalidSizeError } from "./errors";
 import fs from "fs";
 
-const BASE_PATH = "./src/services/photo/test"; // pasar a variable de entorno
+const BASE_PATH = "./src/services/photoUploader/test"; // pasar a variable de entorno
 
 describe("PhotoUploader", () => {
     describe("validatePhoto", () => {

@@ -2,6 +2,7 @@ import { User } from '../model/user';
 import { UserSQLiteManager } from '../database/databaseManager';
 import bcrypt from 'bcrypt'
 import { Gender } from '../model/gender';
+import { PhotoUploader } from './photoUploader';
 const saltRounds = 10;
 
 export class UserService {
@@ -134,7 +135,13 @@ export class UserService {
         return this.sqliteManager.getUserByEmail(email)
     }
 
-    async updatePhoto(userId: number, photo: string): Promise<void> {
-        return this.sqliteManager.updatePhoto(userId, photo);
+    async updatePhoto(userId: number, file: Buffer, filename: string): Promise<void> {
+        new PhotoUploader(file, filename)
+            .uploadPhoto()
+            .then(async (path) => this.sqliteManager.updatePhoto(userId, path))
+    }
+
+    async deletePhoto(userId: number): Promise<void> {
+        this.sqliteManager.updatePhoto(userId, "");
     }
 }

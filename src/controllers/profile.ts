@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
-// import sharp from 'sharp';
 import fs from 'fs';
 import { UserService } from '../services/userService';
 import updateableUserProperties from '../model/updateableUserProperties';
@@ -32,9 +31,8 @@ function updateProfilePhoto(req: Request, res: Response) {
     }
 
     const id = req.body.user.id;
-    const filename = `${id}.jpg`;
     return new UserService()
-        .updatePhoto(id, filename)
+        .updatePhoto(id, req.file.buffer, id.toString())
         .then(() => res.sendStatus(201))
         .catch(err => {
             if (err instanceof InvalidSizeError) {
@@ -65,7 +63,7 @@ function getProfilePhoto(req: Request, res: Response) {
 function deleteProfilePhoto(req: Request, res: Response) {
     const id = req.body.user.id;
     new UserService()
-        .updatePhoto(id, "")
+        .deletePhoto(id)
         .then(() => res.sendStatus(204))
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while deleting the photo.'));
 }

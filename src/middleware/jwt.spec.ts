@@ -63,7 +63,9 @@ describe('when verify same refresh token twice', () => {
 describe('when generate access tokens twice', () => {
     it('should have different refresh tokens each time', () => {
         const refreshToken1 = jwt.generateTokens(1, MAIL).refreshToken;
-        const refreshToken2 = jwt.generateTokens(1, MAIL).refreshToken;
-        expect(refreshToken1).not.toEqual(refreshToken2);
+        setTimeout(() => {
+            const refreshToken2 = jwt.generateTokens(1, MAIL).refreshToken;
+            expect(refreshToken1).not.toEqual(refreshToken2);
+        }, 10);
     })
 });

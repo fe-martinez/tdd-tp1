@@ -25,3 +25,21 @@ describe("PhotoUploader", () => {
         });
     });
 });
+
+describe("when uploading a photo", () => {
+    it("should return the path to the photo", async () => {
+        const photo = fs.readFileSync(`${BASE_PATH}/valid.jpg`);
+        const uploader = new PhotoUploader(photo, "valid");
+        const path = await uploader.uploadPhoto();
+        expect(path).toMatch(/profilePhotos\/valid.jpg/);
+        fs.unlinkSync(path)
+    });
+
+    it("should exist in the filesystem", async () => {
+        const photo = fs.readFileSync(`${BASE_PATH}/valid.jpg`);
+        const uploader = new PhotoUploader(photo, "valid");
+        const path = await uploader.uploadPhoto();
+        expect(fs.existsSync(path)).toBe(true);
+        fs.unlinkSync(path)
+    });
+});

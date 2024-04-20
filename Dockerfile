@@ -7,13 +7,13 @@ FROM node:20
 WORKDIR /dockerizado/app
 
 #Copiar los archivos de configuración necesarios (por ejemplo, package.json y tsconfig.json)
-COPY package.json package-lock.json tsconfig.json ./
-
-# Copiar el resto de los archivos de la aplicación
-COPY . .
+COPY package.json package-lock.json ./
 
 # Instalar las dependencias del proyecto
 RUN npm install
+
+# Copiar el resto de los archivos de la aplicación
+COPY . .
 
 # Exponer el puerto en el que la aplicación se ejecutará dentro del contenedor
 EXPOSE 3000

@@ -1,7 +1,7 @@
 import sharp from "sharp";
-import { InvalidSizeError } from "./errors";
 import fs from "fs";
 import 'dotenv/config';
+import { InvalidSizeError } from "./errors";
 
 const MIN_SIZE_IN_PIXELS = 256;
 const MAX_SIZE_IN_PIXELS = 1024;

@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 import fs from 'fs';
 import { UserService } from '../services/userService';
 import updateableUserProperties from '../model/updateableUserProperties';
@@ -8,6 +8,7 @@ import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
 import { User } from '../model/user';
 import { getUserById } from '../database/userQueries';
 import { Gender } from '../model/gender';
+import { InvalidSizeError } from '../services/photoUploader/errors';
 
 const photosDirectory = './public/images';
 
@@ -32,31 +33,15 @@ function updateProfilePhoto(req: Request, res: Response) {
 
     const id = req.body.user.id;
     const filename = `${id}.jpg`;
-    const photo = sharp(req.file.buffer);
-
-    photo.metadata()
-        .then(metadata => {
-            if (!metadata.width || !metadata.height)
-                return Promise.reject({ statusCode: 500 })
-
-            const isBetween = (min: number, max: number, value: number) => value >= min && value <= max;
-
-            if (!isBetween(128, 1024, metadata.width) || !isBetween(128, 1024, metadata.height)) {
-                const sizeString = `${metadata.width}x${metadata.height}`
-                return Promise.reject({ statusCode: 400, message: `The photo must be between 128x128 and 1024x1024 pixels. Actual size: ${sizeString}` });
-            }
-
-            if (!fs.existsSync(photosDirectory))
-                fs.mkdirSync(photosDirectory, { recursive: true });
-
-            const pathToPhoto = `${photosDirectory}/${filename}`;
-            return photo.jpeg({ mozjpeg: true, quality: 50 })
-                .toFile(pathToPhoto)
-                .then(() => new UserService().updatePhoto(id, pathToPhoto));
-        })
+    return new UserService()
+        .updatePhoto(id, filename)
         .then(() => res.sendStatus(201))
-        .catch(error => res.status(error.statusCode || HTTPErrorCodes.InternalServerError).send({ message: 'An error occurred while processing the photo.', error: error.message || "" }));
-
+        .catch(err => {
+            if (err instanceof InvalidSizeError) {
+                return res.status(HTTPErrorCodes.BadRequest).send(err.message);
+            }
+            return res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while processing the photo.')
+        });
 }
 
 function getProfilePhoto(req: Request, res: Response) {
@@ -103,7 +88,7 @@ const updatePassword = async (id: number, newPassword: string, userService: User
 };
 
 // Función para actualizar el género
-const updateGender  = async (id: number, newGender: string, userService: UserService) => {
+const updateGender = async (id: number, newGender: string, userService: UserService) => {
     try {
         await userService.changeUserGenderById(id, newGender);
     } catch (err) {
@@ -112,7 +97,7 @@ const updateGender  = async (id: number, newGender: string, userService: UserSer
 };
 
 // Función para actualizar el género
-const updateFirstName  = async (id: number, newName: string, userService: UserService) => {
+const updateFirstName = async (id: number, newName: string, userService: UserService) => {
     try {
         await userService.changeUserFirstNameById(id, newName);
     } catch (err) {
@@ -129,7 +114,7 @@ const operationsHandlers: Record<string, (id: number, value: string, userService
 
 const areOptionsValid = (options: any): boolean => {
     const enumKeys = Object.keys(updateableUserProperties);
-    
+
     for (const key in options) {
         if (!enumKeys.includes(key)) {
             return false;
@@ -179,7 +164,7 @@ function getFollowers(req: Request, res: Response) {
     new UserService()
         .getFollowersByUserId(userID)
         .then(followers => res.json(followers))
-        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'An error ocurred while retrieving followers', error: err}));
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({ message: 'An error ocurred while retrieving followers', error: err }));
 }
 
 function getFollowing(req: Request, res: Response) {
@@ -187,7 +172,7 @@ function getFollowing(req: Request, res: Response) {
     new UserService()
         .getFollowingByUserId(userID)
         .then(following => res.json(following))
-        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'An error ocurred while retrieving following', error: err}));
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({ message: 'An error ocurred while retrieving following', error: err }));
 }
 
 export default { getProfile, updateProfilePhoto, getProfilePhoto, deleteProfilePhoto, updateProfile, getFollowers, getFollowing };

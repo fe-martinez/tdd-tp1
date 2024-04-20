@@ -13,4 +13,4 @@ node_modules
 db/users.db
 
 # Imagenes de usuarios
-public/images
+public/

@@ -3,10 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 import { Token, TokenInfo } from '../model/token';
 import { InvalidTokenError } from './errors';
+import 'dotenv/config';
 
-const secretKey = 'tu_clave_secreta'; // Reemplaza esto con tu clave secreta
+const secretKey = process.env.JWT_SECRET_KEY || "secret";
+const accessTokenExpirationTime = process.env.JWT_EXPIRATION_TIME || "5m";
 const refreshTokens: string[] = []; // Almacena los refresh tokens válidos
-const accessTokenExpirationTime = 300; // 5 minutos
 
 function generateAccessToken(id: number, email: string): string {
     return jwt.sign({ id, email, isRefresh: false }, secretKey, { expiresIn: accessTokenExpirationTime });

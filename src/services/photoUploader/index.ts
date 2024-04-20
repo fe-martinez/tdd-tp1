@@ -1,11 +1,11 @@
 import sharp from "sharp";
-import { InvalidSizeError } from "./errors";
 import fs from "fs";
+import 'dotenv/config';
+import { InvalidSizeError } from "./errors";
 
 const MIN_SIZE_IN_PIXELS = 256;
 const MAX_SIZE_IN_PIXELS = 1024;
 const MAX_SIZE_IN_BYTES = 1024 * 1024;
-const PROFILE_PHOTOS_DIRECTORY = "./public/profilePhotos";
 const QUALITY = 50;
 
 function validateSizeInPixels(width: number, height: number) {
@@ -43,10 +43,15 @@ export class PhotoUploader {
     async uploadPhoto(): Promise<string> {
         return this.validatePhoto()
         .then(async () => {
-            if (!fs.existsSync(PROFILE_PHOTOS_DIRECTORY))
-                fs.mkdirSync(PROFILE_PHOTOS_DIRECTORY, { recursive: true });
+            const BASE_PATH = process.env.PROFILE_PHOTOS_DIRECTORY;
+            if (!BASE_PATH) {
+                throw new Error('PROFILE_PHOTOS_DIRECTORY is not defined in the environment.');
+            }
+            
+            if (!fs.existsSync(BASE_PATH))
+                fs.mkdirSync(BASE_PATH, { recursive: true });
     
-            const pathToPhoto = `${PROFILE_PHOTOS_DIRECTORY}/${this.filename}.jpg`;
+            const pathToPhoto = `${BASE_PATH}/${this.filename}.jpg`;
             return this.photo.jpeg({ quality: QUALITY })
                 .toFile(pathToPhoto)
                 .then(() => pathToPhoto);

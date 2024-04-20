@@ -1,15 +1,11 @@
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 import fs from 'fs';
 import { UserService } from '../services/userService';
 import updateableUserProperties from '../model/updateableUserProperties';
 import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
-import { User } from '../model/user';
-import { getUserById } from '../database/userQueries';
 import { Gender } from '../model/gender';
 import { InvalidSizeError } from '../services/photoUploader/errors';
-
-const photosDirectory = './public/images';
 
 function getProfile(req: Request, res: Response) {
     const id = req.body.user.id;

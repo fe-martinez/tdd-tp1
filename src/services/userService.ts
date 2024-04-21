@@ -28,7 +28,7 @@ export class UserService {
         }
     }
 
-    async getUsers(firstName?: string, lastName?: string, hobby?: Number, page?: number): Promise<User[]> {
+    async getUsers(firstName?: string, lastName?: string, hobby?: number, page?: number): Promise<User[]> {
         try {
             let users = await this.sqliteManager.getUsers(firstName, lastName, hobby, page);
             return users;

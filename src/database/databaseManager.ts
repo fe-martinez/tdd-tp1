@@ -60,95 +60,126 @@ export class UserSQLiteManager {
         });
     }
 
-    getUsers(firstName?: string, lastName?: string, hobby?: Number, page: number = 1, ): Promise<User[]> {
-        let query = userQueries.getAllUsers;
-        let params = [];
-
-        if (hobby) {
-            query += userQueries.getHobbiesSubquery;
-            params.push(hobby);
-          }
-
-        if(firstName || lastName) {
-            query += ' WHERE';
-            if (firstName) {
-                query += ' u.firstName LIKE ?';
-                params.push(`%${firstName}%`);
-            }
-            if (lastName) {
-                query += firstName ? ' AND' : '';
-                query += ' u.lastName LIKE ?';
-                params.push(`%${lastName}%`);
-            }
-        }
-
-        query += ' ORDER BY u.id'
-        query += ' LIMIT ? OFFSET ?';
-        params.push(PAGE_SIZE, (page - 1) * PAGE_SIZE)
-
-        return new Promise<User[]>((resolve, reject) => {
-            this.db.all(query, params, (err, rows: User[]) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
-    }
-
-    getUserById(userId: number): Promise<User | null> {
-        return new Promise<User | null>((resolve, reject) => {
-            this.db.get(userQueries.getUserById, [userId], (err, row: User | undefined) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    if (row) {
-                        const user: User = {
-                            id: row.id,
-                            firstName: row.firstName,
-                            lastName: row.lastName,
-                            email: row.email,
-                            password: row.password,
-                            photo: row.photo,
-                            birthDate: new Date(row.birthDate),
-                            gender: row.gender,
-                            hobbies: []
-                        };
+    async getUsers(firstName?: string, lastName?: string, hobby?: number, page: number = 1): Promise<User[]> {
+        try {
+            let query = userQueries.getAllUsers;
+            let params = [];
     
-                        this.db.all(userQueries.getUserHobbiesById, [userId], async (err, hobbyRows: { hobby_id: number }[]) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                console.log("ID del usuario:", userId);
-                                console.log("Hobbies asociados al usuario:", hobbyRows);
-                            for (const hobbyRow of hobbyRows) {
-                                console.log("Hobby ID:", hobbyRow.hobby_id);
-                                const hobbyNameRow = await new Promise<{ name: string }>((resolve, reject) => {
-                                    this.db.get(userQueries.getHobbyNameById, [hobbyRow.hobby_id], (err, hobbyNameRow) => {
-                                        if (err) {
-                                            reject(err);
-                                        } else {
-                                            resolve(hobbyNameRow as { name: string });
-                                        }
-                                    });
-                                });
-                                if (hobbyNameRow) {
-                                    console.log("Hobby Name:", hobbyNameRow.name);
-                                    user.hobbies.push(hobbyNameRow.name);
-                                }
-                            }
-                            resolve(user);
-                            }
-                        });
+            if (hobby) {
+                query += userQueries.getHobbiesSubquery;
+                params.push(hobby);
+            }
+    
+            if (firstName || lastName) {
+                query += ' WHERE';
+                if (firstName) {
+                    query += ' u.firstName LIKE ?';
+                    params.push(`%${firstName}%`);
+                }
+                if (lastName) {
+                    query += firstName ? ' AND' : '';
+                    query += ' u.lastName LIKE ?';
+                    params.push(`%${lastName}%`);
+                }
+            }
+    
+            query += ' ORDER BY u.id';
+            query += ' LIMIT ? OFFSET ?';
+            params.push(PAGE_SIZE, (page - 1) * PAGE_SIZE);
+    
+            const users: User[] = await new Promise<User[]>((resolve, reject) => {
+                this.db.all(query, params, async (err, rows: User[]) => {
+                    if (err) {
+                        reject(err);
                     } else {
-                        resolve(null);
+                        try {
+                            for (const user of rows) {
+                                user.hobbies = await this.getUserHobbies(user.id);
+                            }
+                            resolve(rows);
+                        } catch (error) {
+                            reject(error);
+                        }
                     }
-                }
+                });
             });
-        });
+            return users;
+        } catch (error) {
+            throw error;
+        }
     }
     
+    async getUserHobbies(userId: number): Promise<string[]> {
+        try {
+            const hobbyRows: { hobby_id: number }[] = await new Promise<{ hobby_id: number }[]>((resolve, reject) => {
+                this.db.all(userQueries.getUserHobbiesById, [userId], (err, rows: { hobby_id: number }[]) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(rows);
+                    }
+                });
+            });
+    
+            const hobbies: string[] = [];
+            for (const hobbyRow of hobbyRows) {
+                const hobbyNameRow = await new Promise<{ name: string }>((resolve, reject) => {
+                    this.db.get(userQueries.getHobbyNameById, [hobbyRow.hobby_id], (err, hobbyNameRow) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(hobbyNameRow as { name: string });
+                        }
+                    });
+                });
+                if (hobbyNameRow) {
+                    hobbies.push(hobbyNameRow.name);
+                }
+            }
+            return hobbies;
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    async getUserById(userId: number): Promise<User | null> {
+        try {
+            const user: User | null = await new Promise<User | null>((resolve, reject) => {
+                this.db.get(userQueries.getUserById, [userId], async (err, row: User | undefined) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        if (row) {
+                            const user: User = {
+                                id: row.id,
+                                firstName: row.firstName,
+                                lastName: row.lastName,
+                                email: row.email,
+                                password: row.password,
+                                photo: row.photo,
+                                birthDate: new Date(row.birthDate),
+                                gender: row.gender,
+                                hobbies: []
+                            };
+    
+                            try {
+                                user.hobbies = await this.getUserHobbies(userId);
+                                resolve(user);
+                            } catch (error) {
+                                reject(error);
+                            }
+                        } else {
+                            resolve(null);
+                        }
+                    }
+                });
+            });
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+        
 
     private async checkIfSameUser(followerId: number, followedId: number): Promise<void> {
         if (followerId === followedId) {

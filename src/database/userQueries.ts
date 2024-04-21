@@ -56,3 +56,12 @@ export const getFollowingByUserIdQuery = `
 export const getAllHobbiesQuery = `
     SELECT id, name FROM hobbies
 `;
+
+export const getUserHobbiesById = `
+    SELECT hobby_id FROM user_hobbies WHERE user_id = ?
+
+`;
+
+export const getHobbyNameById = `
+    SELECT name FROM hobbies WHERE id = ?
+`;

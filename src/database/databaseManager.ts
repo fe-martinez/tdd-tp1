@@ -25,7 +25,7 @@ export class UserSQLiteManager {
         });
     }
 
-    insertHobby(userID: Number, hobby: Number): Promise<void> {
+    insertHobby(userID: Number, hobby: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.insertHobby, [userID, hobby], (err) => {
                 if(err) {
@@ -115,14 +115,40 @@ export class UserSQLiteManager {
                             gender: row.gender,
                             hobbies: []
                         };
-                        resolve(user);
+    
+                        this.db.all(userQueries.getUserHobbiesById, [userId], async (err, hobbyRows: { hobby_id: number }[]) => {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                console.log("ID del usuario:", userId);
+                                console.log("Hobbies asociados al usuario:", hobbyRows);
+                            for (const hobbyRow of hobbyRows) {
+                                console.log("Hobby ID:", hobbyRow.hobby_id);
+                                const hobbyNameRow = await new Promise<{ name: string }>((resolve, reject) => {
+                                    this.db.get(userQueries.getHobbyNameById, [hobbyRow.hobby_id], (err, hobbyNameRow) => {
+                                        if (err) {
+                                            reject(err);
+                                        } else {
+                                            resolve(hobbyNameRow as { name: string });
+                                        }
+                                    });
+                                });
+                                if (hobbyNameRow) {
+                                    console.log("Hobby Name:", hobbyNameRow.name);
+                                    user.hobbies.push(hobbyNameRow.name);
+                                }
+                            }
+                            resolve(user);
+                            }
+                        });
                     } else {
-                        resolve(null); 
+                        resolve(null);
                     }
                 }
             });
         });
     }
+    
 
     private async checkIfSameUser(followerId: number, followedId: number): Promise<void> {
         if (followerId === followedId) {

@@ -45,7 +45,7 @@ export class UserService {
         }
     }
 
-    async insertUserHobbies(userID: Number, hobbies: Number[]): Promise<void> {
+    async insertUserHobbies(userID: Number, hobbies: string[]): Promise<void> {
         try {
             hobbies.forEach(hobby => {
                 this.sqliteManager.insertHobby(userID, hobby);

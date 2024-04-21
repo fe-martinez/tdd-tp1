@@ -63,6 +63,11 @@ function getAllHobbies(req: Request, res: Response) {
         .then(hobbies => res.json(hobbies))
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({ message: 'An error occurred while retrieving hobbies', error: err }));
 }
+function getAllGenders(req: Request, res: Response) {
+    new UserService()
+        .getAllGenders()
+        .then(genders => res.json(genders))
+        .catch(err => res.status(500).json({ message: 'An error occurred while retrieving genders', error: err }));
+}
 
-
-export default { getAllUsers, getUserProfileById, followUser, unfollowUser, getOtherUserFollowers, getOtherUserFollowing, getAllHobbies}
+export default { getAllUsers, getUserProfileById, followUser, unfollowUser, getOtherUserFollowers, getOtherUserFollowing, getAllHobbies, getAllGenders}

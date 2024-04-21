@@ -162,4 +162,12 @@ export class UserService {
             throw err;
         }
     }
+    async getAllGenders(): Promise<string[]> {
+        try {
+            const genders = Object.values(Gender);
+            return genders;
+        } catch (err) {
+            throw err;
+        }
+    }
 }

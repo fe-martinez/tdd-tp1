@@ -3,6 +3,7 @@ import { UserSQLiteManager } from '../database/databaseManager';
 import bcrypt from 'bcrypt'
 import { Gender } from '../model/gender';
 import { Hobby } from '../model/hobby';
+import { PhotoUploader } from './photoUploader';
 const saltRounds = 10;
 
 export class UserService {
@@ -151,8 +152,14 @@ export class UserService {
         return this.sqliteManager.getUserByEmail(email)
     }
 
-    async updatePhoto(userId: number, photo: string): Promise<void> {
-        return this.sqliteManager.updatePhoto(userId, photo);
+    async updatePhoto(userId: number, file: Buffer, filename: string): Promise<void> {
+        return new PhotoUploader(file, filename)
+            .uploadPhoto()
+            .then(async (path) => this.sqliteManager.updatePhoto(userId, path))
+    }
+
+    async deletePhoto(userId: number): Promise<void> {
+        return this.sqliteManager.updatePhoto(userId, "");
     }
 
     async getAllHobbies(): Promise<Hobby[]> {
@@ -162,10 +169,10 @@ export class UserService {
             throw err;
         }
     }
+
     async getAllGenders(): Promise<string[]> {
         try {
-            const genders = Object.values(Gender);
-            return genders;
+            return Object.values(Gender) as string[];
         } catch (err) {
             throw err;
         }

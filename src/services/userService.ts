@@ -2,6 +2,7 @@ import { User } from '../model/user';
 import { UserSQLiteManager } from '../database/databaseManager';
 import bcrypt from 'bcrypt'
 import { Gender } from '../model/gender';
+import { Hobby } from '../model/hobby';
 const saltRounds = 10;
 
 export class UserService {
@@ -154,10 +155,9 @@ export class UserService {
         return this.sqliteManager.updatePhoto(userId, photo);
     }
 
-    async getAllHobbies(): Promise<string[]> {
+    async getAllHobbies(): Promise<Hobby[]> {
         try {
-            const hobbies = await this.sqliteManager.getAllHobbies();
-            return hobbies;
+            return await this.sqliteManager.getAllHobbies();
         } catch (err) {
             throw err;
         }

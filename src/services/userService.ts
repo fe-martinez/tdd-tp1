@@ -30,7 +30,7 @@ export class UserService {
         }
     }
 
-    async getUsers(firstName?: string, lastName?: string, hobby?: number, page?: number): Promise<User[]> {
+    async getUsers(firstName?: string, lastName?: string, hobby?: number, page?: number): Promise<Omit<User, 'password'>[]> {
         try {
             let users = await this.sqliteManager.getUsers(firstName, lastName, hobby, page);
             return users;
@@ -39,7 +39,7 @@ export class UserService {
         }
     }
 
-    async getUserById(userId: number): Promise<User | null> {
+    async getUserById(userId: number): Promise<Omit<User, 'password'> | null> {
         try {
             return await this.sqliteManager.getUserById(userId);
         } catch (err) {
@@ -58,7 +58,7 @@ export class UserService {
     }
 
 
-    async createUser(user: Omit<User, 'id'>): Promise<User> {
+    async createUser(user: Omit<User, 'id'>): Promise<Omit<User, 'password'>> {
         try {
             const createdUser = await this.sqliteManager.createUser(user);
             await this.insertUserHobbies(createdUser.id, createdUser.hobbies);  

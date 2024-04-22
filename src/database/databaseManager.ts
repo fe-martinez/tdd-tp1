@@ -37,8 +37,8 @@ export class UserSQLiteManager {
         }); 
     }
 
-    createUser(user: Omit<User, 'id'>): Promise<User> {
-        return new Promise<User>((resolve, reject) => {
+    createUser(user: Omit<User, 'id'>): Promise<Omit<User, 'password'>> {
+        return new Promise<Omit<User, 'password'>>((resolve, reject) => {
             this.db.run(userQueries.createUser, [user.firstName, user.lastName, user.email, user.password, user.photo, user.birthDate, user.gender],
                 function (err) {
                     if (err) {
@@ -49,7 +49,6 @@ export class UserSQLiteManager {
                             firstName: user.firstName,
                             lastName: user.lastName,
                             email: user.email,
-                            password: user.password,
                             photo: user.photo,
                             birthDate: user.birthDate,
                             gender: user.gender,
@@ -60,7 +59,7 @@ export class UserSQLiteManager {
         });
     }
 
-    async getUsers(firstName?: string, lastName?: string, hobby?: number, page: number = 1): Promise<User[]> {
+    async getUsers(firstName?: string, lastName?: string, hobby?: number, page: number = 1): Promise<Omit<User, 'password'>[]> {
         try {
             let query = userQueries.getAllUsers;
             let params = [];
@@ -128,21 +127,20 @@ export class UserSQLiteManager {
         }
     }
     
-    async getUserById(userId: number): Promise<User | null> {
+    async getUserById(userId: number): Promise<Omit<User, 'password'> | null> {
         try {
-            const user: User | null = await new Promise<User | null>((resolve, reject) => {
+            const user: Omit<User, 'password'> | null = await new Promise<Omit<User, 'password'> | null>((resolve, reject) => {
                 this.db.get(userQueries.getUserById, [userId], async (err, row: User | undefined) => {
                     if (err) {
                         reject(err);
                     } else {
                         if (row) {
-                            const user: User = {
+                            const user: Omit<User, 'password'> = {
                                 id: row.id,
                                 firstName: row.firstName,
                                 lastName: row.lastName,
                                 email: row.email,
-                                password: row.password,
-                                photo: row.photo,
+                                    photo: row.photo,
                                 birthDate: new Date(row.birthDate),
                                 gender: row.gender,
                                 hobbies: []

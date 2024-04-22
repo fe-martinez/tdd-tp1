@@ -9,6 +9,12 @@ export class UserSQLiteManager {
     private db: Database;
 
     constructor() {
+        const DATABASE_PATH = process.env.DB_PATH;
+
+        if(!DATABASE_PATH) {
+            throw(new Error('Database path not defined in env'));
+        }
+
         this.db = new sqlite3.Database('db/users.db');
         this.createTables();
     }

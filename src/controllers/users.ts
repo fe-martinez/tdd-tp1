@@ -4,13 +4,14 @@ import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 
 function getAllUsers(req: Request, res: Response) {
-    const {firstName, lastName, hobby} = req.query;
+    const {firstName, lastName, hobby, page} = req.query;
 
     new UserService()
         .getUsers(      
             firstName ? firstName as string : undefined,
             lastName ? lastName as string : undefined, 
-            hobby ? parseInt(hobby as string) : undefined)
+            hobby ? parseInt(hobby as string) : undefined,
+            page ? parseInt(page as string) : undefined)
         .then(users => res.json(users))
         .catch(err => res.status(500).json({ message: 'Error getting users', error: err }));
 }
@@ -56,5 +57,17 @@ function getOtherUserFollowing(req: Request, res: Response) {
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({message: 'An error ocurred while retrieving following', error: err}));
 }
 
+function getAllHobbies(req: Request, res: Response) {
+    new UserService()
+        .getAllHobbies()
+        .then(hobbies => res.json(hobbies))
+        .catch(err => res.status(HTTPErrorCodes.InternalServerError).json({ message: 'An error occurred while retrieving hobbies', error: err }));
+}
+function getAllGenders(req: Request, res: Response) {
+    new UserService()
+        .getAllGenders()
+        .then(genders => res.json(genders))
+        .catch(err => res.status(500).json({ message: 'An error occurred while retrieving genders', error: err }));
+}
 
-export default { getAllUsers, getUserProfileById, followUser, unfollowUser, getOtherUserFollowers, getOtherUserFollowing}
+export default { getAllUsers, getUserProfileById, followUser, unfollowUser, getOtherUserFollowers, getOtherUserFollowing, getAllHobbies, getAllGenders}

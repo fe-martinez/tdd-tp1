@@ -1,5 +1,10 @@
 import { User } from '../model/user';
 import { UserSQLiteManager } from '../database/databaseManager';
+import bcrypt from 'bcrypt'
+import { Gender } from '../model/gender';
+import { Hobby } from '../model/hobby';
+import { PhotoUploader } from './photoUploader';
+const saltRounds = 10;
 
 export class UserService {
     private sqliteManager: UserSQLiteManager;
@@ -8,16 +13,33 @@ export class UserService {
         this.sqliteManager = new UserSQLiteManager();
     }
 
-    async getUsers(firstName?: string, lastName?: string, hobby?: Number): Promise<User[]> {
+    async parseUser(reqBody: any): Promise<Omit<User, 'id'>> {
         try {
-            let users = await this.sqliteManager.getUsers(firstName, lastName, hobby);
+            return {
+                firstName: reqBody.firstName,
+                lastName: reqBody.lastName,
+                email: reqBody.email,
+                password: await bcrypt.hash(reqBody.password, saltRounds),
+                photo: '',
+                birthDate: reqBody.birthDate,
+                gender: reqBody.gender,
+                hobbies: reqBody.hobbies
+            }
+        } catch {
+            throw new Error('Error while parsing user');
+        }
+    }
+
+    async getUsers(firstName?: string, lastName?: string, hobby?: number, page?: number): Promise<Omit<User, 'password'>[]> {
+        try {
+            let users = await this.sqliteManager.getUsers(firstName, lastName, hobby, page);
             return users;
         } catch (err) {
             throw err;
         }
     }
 
-    async getUserById(userId: number): Promise<User | null> {
+    async getUserById(userId: number): Promise<Omit<User, 'password'> | null> {
         try {
             return await this.sqliteManager.getUserById(userId);
         } catch (err) {
@@ -25,7 +47,7 @@ export class UserService {
         }
     }
 
-    async insertUserHobbies(userID: Number, hobbies: Number[]): Promise<void> {
+    async insertUserHobbies(userID: Number, hobbies: string[]): Promise<void> {
         try {
             hobbies.forEach(hobby => {
                 this.sqliteManager.insertHobby(userID, hobby);
@@ -36,7 +58,7 @@ export class UserService {
     }
 
 
-    async createUser(user: Omit<User, 'id'>): Promise<User> {
+    async createUser(user: Omit<User, 'id'>): Promise<Omit<User, 'password'>> {
         try {
             const createdUser = await this.sqliteManager.createUser(user);
             await this.insertUserHobbies(createdUser.id, createdUser.hobbies);  
@@ -93,11 +115,66 @@ export class UserService {
         }
     }
 
+    async changeUserEmailById(id: number, email: string) {
+        try {
+            await this.sqliteManager.changeEmailbyId(id, email);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changeUserFirstNameById(id: number, firstName : string) {
+        try {
+            await this.sqliteManager.changeFirstNamebyId(id, firstName);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changeUserGenderById(id: number, gender : string) {
+        try {
+            await this.sqliteManager.changeGenderbyId(id, gender);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changeUserPasswordById(id: number, newPassword : string) {
+        try {
+            let hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+            await this.sqliteManager.changePasswordbyId(id, hashedPassword);
+        } catch (err) {
+            throw err;
+        }
+    }
+
     async getUserByEmail(email: String): Promise<User | null> {
         return this.sqliteManager.getUserByEmail(email)
     }
 
-    async updatePhoto(userId: number, photo: string): Promise<void> {
-        return this.sqliteManager.updatePhoto(userId, photo);
+    async updatePhoto(userId: number, file: Buffer, filename: string): Promise<void> {
+        return new PhotoUploader(file, filename)
+            .uploadPhoto()
+            .then(async (path) => this.sqliteManager.updatePhoto(userId, path))
+    }
+
+    async deletePhoto(userId: number): Promise<void> {
+        return this.sqliteManager.updatePhoto(userId, "");
+    }
+
+    async getAllHobbies(): Promise<Hobby[]> {
+        try {
+            return await this.sqliteManager.getAllHobbies();
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getAllGenders(): Promise<string[]> {
+        try {
+            return Object.values(Gender) as string[];
+        } catch (err) {
+            throw err;
+        }
     }
 }

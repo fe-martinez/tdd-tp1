@@ -3,6 +3,8 @@ import * as userQueries from './userQueries';
 import * as dbCreationQueries from './dbCreationQueries'
 import { User } from '../model/user';
 
+const PAGE_SIZE = 20;
+
 export class UserSQLiteManager {
     private db: Database;
 
@@ -23,7 +25,7 @@ export class UserSQLiteManager {
         });
     }
 
-    insertHobby(userID: Number, hobby: Number): Promise<void> {
+    insertHobby(userID: Number, hobby: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.insertHobby, [userID, hobby], (err) => {
                 if(err) {
@@ -35,8 +37,8 @@ export class UserSQLiteManager {
         }); 
     }
 
-    createUser(user: Omit<User, 'id'>): Promise<User> {
-        return new Promise<User>((resolve, reject) => {
+    createUser(user: Omit<User, 'id'>): Promise<Omit<User, 'password'>> {
+        return new Promise<Omit<User, 'password'>>((resolve, reject) => {
             this.db.run(userQueries.createUser, [user.firstName, user.lastName, user.email, user.password, user.photo, user.birthDate, user.gender],
                 function (err) {
                     if (err) {
@@ -47,7 +49,6 @@ export class UserSQLiteManager {
                             firstName: user.firstName,
                             lastName: user.lastName,
                             email: user.email,
-                            password: user.password,
                             photo: user.photo,
                             birthDate: user.birthDate,
                             gender: user.gender,
@@ -58,65 +59,111 @@ export class UserSQLiteManager {
         });
     }
 
-    getUsers(firstName?: string, lastName?: string, hobby?: Number): Promise<User[]> {
-        let query = userQueries.getAllUsers;
-        let params = [];
-
-        if (hobby) {
-            query += userQueries.getHobbiesSubquery;
-            params.push(hobby);
-          }
-
-        if(firstName || lastName) {
-            query += ' WHERE';
-            if (firstName) {
-                query += ' u.firstName LIKE ?';
-                params.push(`%${firstName}%`);
+    async getUsers(firstName?: string, lastName?: string, hobby?: number, page: number = 1): Promise<Omit<User, 'password'>[]> {
+        try {
+            let query = userQueries.getAllUsers;
+            let params = [];
+    
+            if (hobby) {
+                query += userQueries.getHobbiesSubquery;
+                params.push(hobby);
             }
-            if (lastName) {
-                query += firstName ? ' AND' : '';
-                query += ' u.lastName LIKE ?';
-                params.push(`%${lastName}%`);
-            }
-        }
-
-        return new Promise<User[]>((resolve, reject) => {
-            this.db.all(query, params, (err, rows: User[]) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
+    
+            if (firstName || lastName) {
+                query += ' WHERE';
+                if (firstName) {
+                    query += ' u.firstName LIKE ?';
+                    params.push(`%${firstName}%`);
                 }
-            });
-        });
-    }
-
-    getUserById(userId: number): Promise<User | null> {
-        return new Promise<User | null>((resolve, reject) => {
-            this.db.get(userQueries.getUserById, [userId], (err, row: User | undefined) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    if (row) {
-                        const user: User = {
-                            id: row.id,
-                            firstName: row.firstName,
-                            lastName: row.lastName,
-                            email: row.email,
-                            password: row.password,
-                            photo: row.photo,
-                            birthDate: new Date(row.birthDate),
-                            gender: row.gender,
-                            hobbies: []
-                        };
-                        resolve(user);
+                if (lastName) {
+                    query += firstName ? ' AND' : '';
+                    query += ' u.lastName LIKE ?';
+                    params.push(`%${lastName}%`);
+                }
+            }
+    
+            query += ' ORDER BY u.id';
+            query += ' LIMIT ? OFFSET ?';
+            params.push(PAGE_SIZE, (page - 1) * PAGE_SIZE);
+    
+            const users: User[] = await new Promise<User[]>((resolve, reject) => {
+                this.db.all(query, params, async (err, rows: User[]) => {
+                    if (err) {
+                        reject(err);
                     } else {
-                        resolve(null); 
+                        try {
+                            for (const user of rows) {
+                                user.hobbies = await this.getUserHobbies(user.id);
+                            }
+                            resolve(rows);
+                        } catch (error) {
+                            reject(error);
+                        }
                     }
-                }
+                });
             });
-        });
+            return users;
+        } catch (error) {
+            throw error;
+        }
     }
+    
+    async getUserHobbies(userId: number): Promise<string[]> {
+        try {
+            const hobbyRows: { name: string }[] = await new Promise<{ name: string }[]>((resolve, reject) => {
+                this.db.all(userQueries.getAllUserHobbies, [userId], (err, rows: { name: string }[]) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(rows);
+                    }
+                });
+            });
+
+            const hobbies: string[] = hobbyRows.map(row => row.name);
+            return hobbies;
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    async getUserById(userId: number): Promise<Omit<User, 'password'> | null> {
+        try {
+            const user: Omit<User, 'password'> | null = await new Promise<Omit<User, 'password'> | null>((resolve, reject) => {
+                this.db.get(userQueries.getUserById, [userId], async (err, row: User | undefined) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        if (row) {
+                            const user: Omit<User, 'password'> = {
+                                id: row.id,
+                                firstName: row.firstName,
+                                lastName: row.lastName,
+                                email: row.email,
+                                    photo: row.photo,
+                                birthDate: new Date(row.birthDate),
+                                gender: row.gender,
+                                hobbies: []
+                            };
+    
+                            try {
+                                user.hobbies = await this.getUserHobbies(userId);
+                                resolve(user);
+                            } catch (error) {
+                                reject(error);
+                            }
+                        } else {
+                            resolve(null);
+                        }
+                    }
+                });
+            });
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+        
 
     private async checkIfSameUser(followerId: number, followedId: number): Promise<void> {
         if (followerId === followedId) {
@@ -229,6 +276,86 @@ export class UserSQLiteManager {
     updatePhoto(userId: number, photo: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.updatePhoto, [photo, userId], err => err ? reject(err) : resolve());
+        });
+    }
+
+    async changeEmailbyId(id: number, email: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.db.run(userQueries.updateEmailById, [email, id], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (this.changes === 0) {
+                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
+                        reject(noChangesError);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    }
+
+    async changeFirstNamebyId(id: number, firstName : string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.db.run(userQueries.updateFirstNameById, [firstName, id], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (this.changes === 0) {
+                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
+                        reject(noChangesError);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    } 
+
+    async changeGenderbyId(id: number, gender : string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.db.run(userQueries.updateGenderById, [gender, id], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (this.changes === 0) {
+                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
+                        reject(noChangesError);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    }
+ 
+    async changePasswordbyId(id: number, newPassword: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        this.db.run(userQueries.updatePasswordById, [newPassword, id], function(err) {
+            if (err) {
+                reject(err);
+            } else {
+                if (this.changes === 0) {
+                    const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
+                    reject(noChangesError);
+                } else {
+                    resolve();
+                }
+            }
+        });
+    });
+    }
+
+    async getAllHobbies(): Promise<{ id: number; name: string }[]> {
+        return new Promise<{ id: number; name: string }[]>((resolve, reject) => {
+            this.db.all(userQueries.getAllHobbiesQuery, (err, rows: { id: number; name: string }[]) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
         });
     }
 }

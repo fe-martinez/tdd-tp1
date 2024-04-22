@@ -7,5 +7,5 @@ export interface User {
     photo: string,
     birthDate: Date,
     gender: string
-    hobbies: Number[]
+    hobbies:  string[]
 }

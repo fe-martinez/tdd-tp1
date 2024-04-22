@@ -10,5 +10,6 @@ router.post('/:id/follow', jwt.authenticateToken, controller.followUser);
 router.delete('/:id/follow', jwt.authenticateToken, controller.unfollowUser);
 router.get('/:id/profile/followers', jwt.authenticateToken, controller.getOtherUserFollowers);
 router.get('/:id/profile/following', jwt.authenticateToken, controller.getOtherUserFollowing);
-
+router.get('/hobbies' ,controller.getAllHobbies);
+router.get('/genders' ,controller.getAllGenders);
 export default router;

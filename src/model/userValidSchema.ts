@@ -15,7 +15,7 @@ const userValidSchema = joi.object({
     photo: joi.string(),
     birthDate: joi.date().max('now').required(),
     gender: joi.string().valid(...Object.values(Gender)).required(),
-    hobbies: joi.array().items(joi.number()).required()
+    hobbies: joi.array().items(joi.number().integer().min(1).max(40)).required()
 });
 
 export { userValidSchema };

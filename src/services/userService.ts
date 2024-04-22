@@ -2,6 +2,7 @@ import { User } from '../model/user';
 import { UserSQLiteManager } from '../database/databaseManager';
 import bcrypt from 'bcrypt'
 import { Gender } from '../model/gender';
+import { Hobby } from '../model/hobby';
 import { PhotoUploader } from './photoUploader';
 const saltRounds = 10;
 
@@ -29,7 +30,7 @@ export class UserService {
         }
     }
 
-    async getUsers(firstName?: string, lastName?: string, hobby?: Number, page?: number): Promise<User[]> {
+    async getUsers(firstName?: string, lastName?: string, hobby?: number, page?: number): Promise<User[]> {
         try {
             let users = await this.sqliteManager.getUsers(firstName, lastName, hobby, page);
             return users;
@@ -46,7 +47,7 @@ export class UserService {
         }
     }
 
-    async insertUserHobbies(userID: Number, hobbies: Number[]): Promise<void> {
+    async insertUserHobbies(userID: Number, hobbies: string[]): Promise<void> {
         try {
             hobbies.forEach(hobby => {
                 this.sqliteManager.insertHobby(userID, hobby);
@@ -159,5 +160,21 @@ export class UserService {
 
     async deletePhoto(userId: number): Promise<void> {
         return this.sqliteManager.updatePhoto(userId, "");
+    }
+
+    async getAllHobbies(): Promise<Hobby[]> {
+        try {
+            return await this.sqliteManager.getAllHobbies();
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getAllGenders(): Promise<string[]> {
+        try {
+            return Object.values(Gender) as string[];
+        } catch (err) {
+            throw err;
+        }
     }
 }

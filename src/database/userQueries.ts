@@ -53,3 +53,24 @@ export const getFollowingByUserIdQuery = `
     INNER JOIN user_follows uf ON u.id = uf.followed_id
     WHERE uf.follower_id = ?;
 `;
+export const getAllHobbiesQuery = `
+    SELECT id, name FROM hobbies
+`;
+
+export const getUserHobbiesById = `
+    SELECT hobby_id FROM user_hobbies WHERE user_id = ?
+`;
+
+export const getAllUserHobbies = `
+    SELECT h.name
+    FROM Hobbies h
+    INNER JOIN (
+        SELECT hobby_id
+        FROM user_hobbies
+        WHERE user_id = ?
+    ) uh ON h.id = uh.hobby_id;
+`
+
+export const getHobbyNameById = `
+    SELECT name FROM hobbies WHERE id = ?
+`;

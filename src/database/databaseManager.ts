@@ -111,8 +111,8 @@ export class UserSQLiteManager {
     
     async getUserHobbies(userId: number): Promise<string[]> {
         try {
-            const hobbyRows: { hobby_id: number }[] = await new Promise<{ hobby_id: number }[]>((resolve, reject) => {
-                this.db.all(userQueries.getUserHobbiesById, [userId], (err, rows: { hobby_id: number }[]) => {
+            const hobbyRows: { name: string }[] = await new Promise<{ name: string }[]>((resolve, reject) => {
+                this.db.all(userQueries.getAllUserHobbies, [userId], (err, rows: { name: string }[]) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -120,22 +120,8 @@ export class UserSQLiteManager {
                     }
                 });
             });
-    
-            const hobbies: string[] = [];
-            for (const hobbyRow of hobbyRows) {
-                const hobbyNameRow = await new Promise<{ name: string }>((resolve, reject) => {
-                    this.db.get(userQueries.getHobbyNameById, [hobbyRow.hobby_id], (err, hobbyNameRow) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(hobbyNameRow as { name: string });
-                        }
-                    });
-                });
-                if (hobbyNameRow) {
-                    hobbies.push(hobbyNameRow.name);
-                }
-            }
+
+            const hobbies: string[] = hobbyRows.map(row => row.name);
             return hobbies;
         } catch (error) {
             throw error;
@@ -375,12 +361,4 @@ export class UserSQLiteManager {
             });
         });
     }
-    
-    
-    
-    
-    
-    
-
-
 }

@@ -59,8 +59,17 @@ export const getAllHobbiesQuery = `
 
 export const getUserHobbiesById = `
     SELECT hobby_id FROM user_hobbies WHERE user_id = ?
-
 `;
+
+export const getAllUserHobbies = `
+    SELECT h.name
+    FROM Hobbies h
+    INNER JOIN (
+        SELECT hobby_id
+        FROM user_hobbies
+        WHERE user_id = ?
+    ) uh ON h.id = uh.hobby_id;
+`
 
 export const getHobbyNameById = `
     SELECT name FROM hobbies WHERE id = ?

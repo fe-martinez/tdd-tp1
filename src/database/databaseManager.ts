@@ -15,7 +15,7 @@ export class UserSQLiteManager {
             throw(new Error('Database path not defined in env'));
         }
 
-        this.db = new sqlite3.Database('db/users.db');
+        this.db = new sqlite3.Database(DATABASE_PATH);
         this.createTables();
     }
 

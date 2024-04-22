@@ -20,7 +20,7 @@ export const updateGenderById = `UPDATE users SET gender = ? WHERE id = ?`;
 
 export const updatePasswordById = `UPDATE users SET password = ? WHERE id = ?`;
 
-export const getAllUsers = 'SELECT u.* FROM users u';
+export const getAllUsers = 'SELECT u.id, u.firstName, u.lastName, u.email, u.photo, u.birthDate, u.gender FROM users u';
 
 export const getHobbiesSubquery = `
 INNER JOIN (

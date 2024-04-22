@@ -1,10 +1,10 @@
 # Usar la imagen oficial de Node.js 20 como base
 FROM node:20
 
-# RUN mkdir /dockerizado/app
+# RUN mkdir /app
 
 # Establecer el directorio de trabajo dentro del contenedor
-WORKDIR /dockerizado/app
+WORKDIR /app
 
 #Copiar los archivos de configuración necesarios (por ejemplo, package.json y tsconfig.json)
 COPY package.json package-lock.json ./

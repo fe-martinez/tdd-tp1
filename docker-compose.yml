@@ -5,7 +5,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${EXTERNAL_API_PORT}:3000"
-    volumes:
-      - .:/app
     environment:
       - NODE_ENV=${NODE_ENV}
+    volumes:
+      - dbdata:/app/${DB_DIR}
+
+volumes:
+  dbdata:

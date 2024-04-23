@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserService } from '../services/userService';
+import { UserService } from '../services/user';
 import { userValidSchema } from '../model/userValidSchema';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 import HTTPSuccessCodes from '../utilities/httpSuccessCodes';

@@ -1,9 +1,12 @@
-import { User } from '../model/user';
-import { UserSQLiteManager } from '../database/databaseManager';
+import { User } from '../../model/user';
+import { UserSQLiteManager } from '../../database/databaseManager';
 import bcrypt from 'bcrypt'
-import { Gender } from '../model/gender';
-import { Hobby } from '../model/hobby';
-import { PhotoUploader } from './photoUploader';
+import { Gender } from '../../model/gender';
+import { Hobby } from '../../model/hobby';
+import { PhotoUploader } from './../photoUploader';
+import { Token } from '../../model/token';
+import { UserIncorrectPasswordError, UserNotExistsError } from './../user/errors';
+import jwt from '../../middleware/jwt';
 const saltRounds = 10;
 
 export class UserService {
@@ -52,8 +55,8 @@ export class UserService {
             hobbies.forEach(hobby => {
                 this.sqliteManager.insertHobby(userID, hobby);
             })
-        } catch(err) {
-            throw(err);
+        } catch (err) {
+            throw (err);
         }
     }
 
@@ -61,7 +64,7 @@ export class UserService {
     async createUser(user: Omit<User, 'id'>): Promise<Omit<User, 'password'>> {
         try {
             const createdUser = await this.sqliteManager.createUser(user);
-            await this.insertUserHobbies(createdUser.id, createdUser.hobbies);  
+            await this.insertUserHobbies(createdUser.id, createdUser.hobbies);
             return createdUser;
         } catch (err) {
             throw err;
@@ -84,7 +87,7 @@ export class UserService {
             throw new Error('Error while getting followers by user ID: ' + error);
         }
     }
-    
+
     async unfollowUser(followerId: number, userIdToUnfollow: number): Promise<void> {
         try {
             await this.sqliteManager.unfollowUser(followerId, userIdToUnfollow);
@@ -123,7 +126,7 @@ export class UserService {
         }
     }
 
-    async changeUserFirstNameById(id: number, firstName : string) {
+    async changeUserFirstNameById(id: number, firstName: string) {
         try {
             await this.sqliteManager.changeFirstNamebyId(id, firstName);
         } catch (err) {
@@ -131,7 +134,7 @@ export class UserService {
         }
     }
 
-    async changeUserGenderById(id: number, gender : string) {
+    async changeUserGenderById(id: number, gender: string) {
         try {
             await this.sqliteManager.changeGenderbyId(id, gender);
         } catch (err) {
@@ -139,7 +142,7 @@ export class UserService {
         }
     }
 
-    async changeUserPasswordById(id: number, newPassword : string) {
+    async changeUserPasswordById(id: number, newPassword: string) {
         try {
             let hashedPassword = await bcrypt.hash(newPassword, saltRounds);
             await this.sqliteManager.changePasswordbyId(id, hashedPassword);
@@ -176,5 +179,12 @@ export class UserService {
         } catch (err) {
             throw err;
         }
+    }
+
+    async login(email: string, password: string): Promise<Token> {
+        return this.getUserByEmail(email)
+            .then(user => !user ? Promise.reject(new UserNotExistsError()) : user)
+            .then(async user => bcrypt.compare(password, user.password as string)
+                .then(equal => !equal ? Promise.reject(new UserIncorrectPasswordError()) : jwt.generateTokens(user.id, user.email as string)));
     }
 }

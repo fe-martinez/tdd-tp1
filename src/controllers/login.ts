@@ -1,8 +1,6 @@
 import HTTPErrorCodes from "../utilities/httpErrorCodes";
 import { Request, Response } from 'express';
-import jwt from '../middleware/jwt'
-import bcrypt from 'bcrypt';
-import { UserService } from '../services/userService';
+import { UserService } from '../services/user';
 import { UserNotExistsError } from "../services/user/errors";
 
 function parseAuthorizationHeader(authHeader: string | undefined) {

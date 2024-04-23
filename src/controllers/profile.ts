@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 import fs from 'fs';
-import { UserService } from '../services/userService';
+import { UserService } from '../services/user';
 import updateableUserProperties from '../model/updateableUserProperties';
 import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
 import { Gender } from '../model/gender';

@@ -1,12 +1,12 @@
-import { User } from '../model/user';
-import { UserSQLiteManager } from '../database/databaseManager';
+import { User } from '../../model/user';
+import { UserSQLiteManager } from '../../database/databaseManager';
 import bcrypt from 'bcrypt'
-import { Gender } from '../model/gender';
-import { Hobby } from '../model/hobby';
-import { PhotoUploader } from './photoUploader';
-import { Token } from '../model/token';
-import { UserIncorrectPasswordError, UserNotExistsError } from './user/errors';
-import jwt from '../middleware/jwt';
+import { Gender } from '../../model/gender';
+import { Hobby } from '../../model/hobby';
+import { PhotoUploader } from './../photoUploader';
+import { Token } from '../../model/token';
+import { UserIncorrectPasswordError, UserNotExistsError } from './../user/errors';
+import jwt from '../../middleware/jwt';
 const saltRounds = 10;
 
 export class UserService {

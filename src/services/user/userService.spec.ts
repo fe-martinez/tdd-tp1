@@ -1,4 +1,4 @@
-import { UserService } from "../userService";
+import { UserService } from "./";
 
 describe("Testing tests works", () => {
     it("should pass", () => {

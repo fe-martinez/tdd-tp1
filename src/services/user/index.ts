@@ -34,41 +34,21 @@ export class UserService {
     }
 
     async getUsers(firstName?: string, lastName?: string, hobby?: number, page?: number): Promise<Omit<User, 'password'>[]> {
-        try {
-            let users = await this.sqliteManager.getUsers(firstName, lastName, hobby, page);
-            return users;
-        } catch (err) {
-            throw err;
-        }
+        return this.sqliteManager.getUsers(firstName, lastName, hobby, page);
     }
 
     async getUserById(userId: number): Promise<Omit<User, 'password'> | null> {
-        try {
-            return await this.sqliteManager.getUserById(userId);
-        } catch (err) {
-            throw err;
-        }
+        return this.sqliteManager.getUserById(userId);
     }
 
     async insertUserHobbies(userID: Number, hobbies: string[]): Promise<void> {
-        try {
-            hobbies.forEach(hobby => {
-                this.sqliteManager.insertHobby(userID, hobby);
-            })
-        } catch (err) {
-            throw (err);
-        }
+        hobbies.forEach(hobby => this.sqliteManager.insertHobby(userID, hobby))
     }
 
-
     async createUser(user: Omit<User, 'id'>): Promise<Omit<User, 'password'>> {
-        try {
-            const createdUser = await this.sqliteManager.createUser(user);
-            await this.insertUserHobbies(createdUser.id, createdUser.hobbies);
-            return createdUser;
-        } catch (err) {
-            throw err;
-        }
+        const createdUser = await this.sqliteManager.createUser(user);
+        await this.insertUserHobbies(createdUser.id, createdUser.hobbies);
+        return createdUser;
     }
 
     async followUser(userIdToFollow: number, followerUserId: number): Promise<User> {
@@ -98,57 +78,35 @@ export class UserService {
     }
 
     async getFollowingByUserId(userId: number): Promise<User[]> {
-        try {
-            return await this.sqliteManager.getFollowingByUserId(userId);
-        } catch (error) {
-            throw error;
-        }
+        return this.sqliteManager.getFollowingByUserId(userId);
     }
 
     async getUserPassword(email: String): Promise<String> {
-        try {
-            const user = await this.sqliteManager.getEmailRow(email);
-            if (user) {
-                return user.password;
-            } else {
-                throw new Error('Email not found in the db');
-            }
-        } catch (err) {
-            throw err;
+        const user = await this.sqliteManager.getEmailRow(email);
+        if (user) {
+            return user.password;
+        } else {
+            throw new Error('Email not found in the db');
         }
+
     }
 
     async changeUserEmailById(id: number, email: string) {
-        try {
-            await this.sqliteManager.changeEmailbyId(id, email);
-        } catch (err) {
-            throw err;
-        }
+        this.sqliteManager.changeEmailbyId(id, email);
     }
 
     async changeUserFirstNameById(id: number, firstName: string) {
-        try {
-            await this.sqliteManager.changeFirstNamebyId(id, firstName);
-        } catch (err) {
-            throw err;
-        }
+        this.sqliteManager.changeFirstNamebyId(id, firstName);
+
     }
 
     async changeUserGenderById(id: number, gender: string) {
-        try {
-            await this.sqliteManager.changeGenderbyId(id, gender);
-        } catch (err) {
-            throw err;
-        }
+        this.sqliteManager.changeGenderbyId(id, gender);
     }
 
     async changeUserPasswordById(id: number, newPassword: string) {
-        try {
-            let hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-            await this.sqliteManager.changePasswordbyId(id, hashedPassword);
-        } catch (err) {
-            throw err;
-        }
+        let hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+        await this.sqliteManager.changePasswordbyId(id, hashedPassword);
     }
 
     async getUserByEmail(email: String): Promise<User | null> {
@@ -166,19 +124,11 @@ export class UserService {
     }
 
     async getAllHobbies(): Promise<Hobby[]> {
-        try {
-            return await this.sqliteManager.getAllHobbies();
-        } catch (err) {
-            throw err;
-        }
+        return await this.sqliteManager.getAllHobbies();
     }
 
     async getAllGenders(): Promise<string[]> {
-        try {
-            return Object.values(Gender) as string[];
-        } catch (err) {
-            throw err;
-        }
+        return Object.values(Gender) as string[];
     }
 
     async login(email: string, password: string): Promise<Token> {

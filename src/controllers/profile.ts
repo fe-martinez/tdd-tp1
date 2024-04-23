@@ -65,39 +65,21 @@ function deleteProfilePhoto(req: Request, res: Response) {
 }
 
 // Función para actualizar el email
-const updateEmail = async (id: number, newEmail: string, userService: UserService) => {
-    try {
-        await userService.changeUserEmailById(id, newEmail);
-    } catch (err) {
-        throw err;
-    }
-};
+const updateEmail = async (id: number, newEmail: string, userService: UserService) =>
+    userService.changeUserEmailById(id, newEmail);
 
-const updatePassword = async (id: number, newPassword: string, userService: UserService) => {
-    try {
-        await userService.changeUserPasswordById(id, newPassword);
-    } catch (err) {
-        throw err;
-    }
-};
+
+const updatePassword = async (id: number, newPassword: string, userService: UserService) =>
+    userService.changeUserPasswordById(id, newPassword);
+
 
 // Función para actualizar el género
-const updateGender = async (id: number, newGender: string, userService: UserService) => {
-    try {
-        await userService.changeUserGenderById(id, newGender);
-    } catch (err) {
-        throw err;
-    }
-};
+const updateGender = async (id: number, newGender: string, userService: UserService) =>
+    userService.changeUserGenderById(id, newGender);
 
 // Función para actualizar el género
-const updateFirstName = async (id: number, newName: string, userService: UserService) => {
-    try {
-        await userService.changeUserFirstNameById(id, newName);
-    } catch (err) {
-        throw err;
-    }
-};
+const updateFirstName = async (id: number, newName: string, userService: UserService) => 
+userService.changeUserFirstNameById(id, newName);
 
 const operationsHandlers: Record<string, (id: number, value: string, userService: UserService) => void> = {
     [updateableUserProperties.email]: updateEmail,

@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import jwt from '../middleware/jwt'
 import bcrypt from 'bcrypt';
 import { UserService } from '../services/userService';
+import { UserNotExistsError } from "../services/user/errors";
 
 function parseAuthorizationHeader(authHeader: string | undefined) {
     const base64String = authHeader && authHeader.split(' ')[1];
@@ -19,24 +20,13 @@ function login(req: Request, res: Response) {
     }
 
     new UserService()
-        .getUserByEmail(username)
-        .then(user => {
-            if (!user)
-                return res.status(HTTPErrorCodes.NotFound).json({ error: "User not found" });
-
-            const userPassword = user.password.toString();
-            return bcrypt.compare(password, userPassword)
-            .then(equal => {
-                if (!equal)
-                    return res.status(HTTPErrorCodes.Unauthorized).json({ error: "Password is not correct" });
-
-                const tokens = jwt.generateTokens(user.id, user.email.toString());
-                return res.json(tokens);
-            })
-        })
-        .catch(err => {
-            const errMessage: string = err.message || "Database error";
-            return res.status(HTTPErrorCodes.InternalServerError).json({ message: 'Error during login', error: errMessage })
+        .login(username, password)
+        .then(tokens => res.json(tokens))
+        .catch((err: Error) => {
+            if (err instanceof UserNotExistsError) {
+                return res.status(HTTPErrorCodes.NotFound).send(err.message);
+            }
+            res.status(HTTPErrorCodes.Forbidden).send(err.message);
         });
 }
 

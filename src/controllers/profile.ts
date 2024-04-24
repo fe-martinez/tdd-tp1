@@ -66,31 +66,6 @@ function deleteProfilePhoto(req: Request, res: Response) {
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while deleting the photo.'));
 }
 
-// Función para actualizar el email
-const updateEmail = async (id: number, newEmail: string, userService: UserService) =>
-    userService.changeUserEmailById(id, newEmail);
-
-
-const updatePassword = async (id: number, newPassword: string, userService: UserService) =>
-    userService.changeUserPasswordById(id, newPassword);
-
-
-// Función para actualizar el género
-const updateGender = async (id: number, newGender: string, userService: UserService) =>
-    userService.changeUserGenderById(id, newGender);
-
-// Función para actualizar el género
-const updateFirstName = async (id: number, newName: string, userService: UserService) => 
-userService.changeUserFirstNameById(id, newName);
-
-const operationsHandlers: Record<string, (id: number, value: string, userService: UserService) => void> = {
-    [updateableUserProperties.email]: updateEmail,
-    [updateableUserProperties.password]: updatePassword,
-    [updateableUserProperties.gender]: updateGender,
-    [updateableUserProperties.firstName]: updateFirstName
-};
-
-
 async function updateProfile(req: Request, res: Response) {
     const profileUpdater = new ProfileUpdater();
     try {
@@ -102,29 +77,6 @@ async function updateProfile(req: Request, res: Response) {
     }
 
     return res.status(HTTPSuccessCodes.OK).json("Ok");
-
-    // Verificar si las operaciones en el cuerpo de la solicitud son válidas
-    // if (!areOptionsValid(updates)) {
-    //     return res.status(HTTPErrorCodes.BadRequest).json({ error: 'Invalid updates!' });
-    // }
-
-    // if (Gender.isValid(updates)) {}
-
-    // try {
-    //     // Iterar sobre las opciones válidas y llamar a la función correspondiente para cada una
-    //     for (const key of Object.keys(updates)) {
-    //         const update = key as updateableUserProperties;
-    //         const newValue = updates[update];
-    //         if (operationsHandlers[update]) {
-    //             await operationsHandlers[update](id, newValue, userService); // Llama a la función correspondiente
-    //         }
-    //     }
-
-    //     let user = await userService.getUserById(id);
-    //     return res.status(HTTPSuccessCodes.OK).json(user);
-    // } catch (error) {
-    //     return res.status(HTTPErrorCodes.InternalServerError).json({ error: 'An error occurred while updating profile' });
-    // }
 }
 
 function getFollowers(req: Request, res: Response) {

@@ -2,10 +2,13 @@ import { Request, Response } from 'express';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 import fs from 'fs';
 import { UserService } from '../services/user';
-import updateableUserProperties from '../model/updateableUserProperties';
+import { updateableUserProperties } from '../model/updateableUserProperties';
 import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
 import { Gender } from '../model/gender';
 import { InvalidSizeError } from '../services/photoUploader/errors';
+import { ProfileUpdater } from '../services/profileUpdater/profile';
+import { userValidSchema } from '../model/userValidSchema';
+import { BadRequestError, InternalServerError } from '../services/profileUpdater/errors';
 
 function getProfile(req: Request, res: Response) {
     const id = req.body.user.id;
@@ -64,74 +67,20 @@ function deleteProfilePhoto(req: Request, res: Response) {
         .catch(err => res.status(HTTPErrorCodes.InternalServerError).send('An error occurred while deleting the photo.'));
 }
 
-// Función para actualizar el email
-const updateEmail = async (id: number, newEmail: string, userService: UserService) =>
-    userService.changeUserEmailById(id, newEmail);
-
-
-const updatePassword = async (id: number, newPassword: string, userService: UserService) =>
-    userService.changeUserPasswordById(id, newPassword);
-
-
-// Función para actualizar el género
-const updateGender = async (id: number, newGender: string, userService: UserService) =>
-    userService.changeUserGenderById(id, newGender);
-
-// Función para actualizar el género
-const updateFirstName = async (id: number, newName: string, userService: UserService) => 
-userService.changeUserFirstNameById(id, newName);
-
-const operationsHandlers: Record<string, (id: number, value: string, userService: UserService) => void> = {
-    [updateableUserProperties.email]: updateEmail,
-    [updateableUserProperties.password]: updatePassword,
-    [updateableUserProperties.gender]: updateGender,
-    [updateableUserProperties.firstName]: updateFirstName
-};
-
-const areOptionsValid = (options: any): boolean => {
-    const enumKeys = Object.keys(updateableUserProperties);
-
-    for (const key in options) {
-        if (!enumKeys.includes(key)) {
-            return false;
-        }
-    }
-
-    return true;
-};
-
 async function updateProfile(req: Request, res: Response) {
-    const userService = new UserService();
-    const updates = req.body;
-    const id = req.body.user.id;
-
-    if ('user' in updates) {
-        delete updates.user;
-    }
-
-    // Verificar si las operaciones en el cuerpo de la solicitud son válidas
-    if (!areOptionsValid(updates)) {
-        return res.status(HTTPErrorCodes.BadRequest).json({ error: 'Invalid updates!' });
-    }
-
-    if (!Object.values(Gender).includes(updates.gender as Gender)) {
-        return res.status(HTTPErrorCodes.BadRequest).json({ error: `Invalid gender: ${updates.gender}` });
-    }
-
+    const profileUpdater = new ProfileUpdater();
     try {
-        // Iterar sobre las opciones válidas y llamar a la función correspondiente para cada una
-        for (const key of Object.keys(updates)) {
-            const update = key as updateableUserProperties;
-            const newValue = updates[update];
-            if (operationsHandlers[update]) {
-                await operationsHandlers[update](id, newValue, userService); // Llama a la función correspondiente
-            }
+        await profileUpdater.update(req.body, req.body.user.id);
+        return res.status(HTTPSuccessCodes.OK).json("Ok");
+    }
+    catch(error) {
+        let err = error as Error;
+        if (error == BadRequestError) {
+            return res.status(HTTPErrorCodes.BadRequest).json(err.message);
         }
-
-        let user = await userService.getUserById(id);
-        return res.status(HTTPSuccessCodes.OK).json(user);
-    } catch (error) {
-        return res.status(HTTPErrorCodes.InternalServerError).json({ error: 'An error occurred while updating profile' });
+        else {
+            return res.status(HTTPErrorCodes.InternalServerError).json(err.message);
+        }
     }
 }
 

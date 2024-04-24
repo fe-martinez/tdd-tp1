@@ -91,24 +91,6 @@ export class UserService {
 
     }
 
-    async changeUserEmailById(id: number, email: string) {
-        this.sqliteManager.changeEmailbyId(id, email);
-    }
-
-    async changeUserFirstNameById(id: number, firstName: string) {
-        this.sqliteManager.changeFirstNamebyId(id, firstName);
-
-    }
-
-    async changeUserGenderById(id: number, gender: string) {
-        this.sqliteManager.changeGenderbyId(id, gender);
-    }
-
-    async changeUserPasswordById(id: number, newPassword: string) {
-        let hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-        await this.sqliteManager.changePasswordbyId(id, hashedPassword);
-    }
-
     async getUserByEmail(email: String): Promise<User | null> {
         return this.sqliteManager.getUserByEmail(email)
     }

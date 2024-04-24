@@ -2,6 +2,7 @@ import sqlite3, { Database } from "sqlite3";
 import * as userQueries from './userQueries';
 import * as dbCreationQueries from './dbCreationQueries'
 import { User } from '../model/user';
+import { updateableUserProperties } from "../model/updateableUserProperties";
 
 const PAGE_SIZE = 20;
 
@@ -65,32 +66,110 @@ export class UserSQLiteManager {
         });
     }
 
-    async getUsers(firstName?: string, lastName?: string, hobby?: number, page: number = 1): Promise<Omit<User, 'password'>[]> {
+    private async getUpdateProfileQuery(id: number, firstName?: string, email?: string, gender?: string, password?: string) {
+        let query : String = new String('UPDATE users SET ');
+        let params : String[] = [];
+
+        if (firstName) {
+            query = query.concat('firstName = ?, ');
+            params.push(firstName);
+        }
+
+        if (email) {
+            query = query.concat('email = ?, ');
+            params.push(email);
+        }
+
+        if (gender) {
+            query = query.concat('gender = ?, ');
+            params.push(gender);
+        }
+
+        if (password) {
+            query = query.concat('password = ? ');
+            params.push(password);
+        }
+
+        if (query.endsWith(', ')) {
+            query = query.slice(0, -2);
+            query = query.concat(' ');
+        }
+
+        query = query.concat('WHERE id = ?');
+        params.push(id.toString());
+        return {query, params}
+    }
+
+    private async extractUpdates(updates: Map<string, string>) {
+        let firstName: string | undefined;
+        let email: string | undefined;
+        let gender: string | undefined;
+        let password: string | undefined;
+      
+        for (const [key, value] of updates.entries()) {
+          switch (key) {
+            case updateableUserProperties.firstName:
+                firstName = value;
+                break;
+            case updateableUserProperties.email:
+                email = value;
+                break;
+            case updateableUserProperties.gender:
+                gender = value;
+                break;
+            case updateableUserProperties.password:
+                password = value;
+                break;
+          }
+        
+        }
+        return {firstName, email, gender, password}
+    }
+
+    async updateProfile(id: number, updates: Map<string, string>) {
         try {
-            let query = userQueries.getAllUsers;
-            let params = [];
-    
-            if (hobby) {
-                query += userQueries.getHobbiesSubquery;
-                params.push(hobby);
+            let {firstName, email, gender, password} = await this.extractUpdates(updates);
+            let {query, params} = await this.getUpdateProfileQuery(id, firstName, email, gender, password);
+            await this.db.run(query as string, params);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    async getUsersQuery(firstName?: string, lastName?: string, hobby?: number, page: number = 1) {
+        let query = userQueries.getAllUsers;
+        let params = [];
+
+        if (hobby) {
+            query += userQueries.getHobbiesSubquery;
+            params.push(hobby);
+        }
+
+        if (firstName || lastName) {
+            query += ' WHERE';
+            if (firstName) {
+                query += ' u.firstName LIKE ?';
+                params.push(`%${firstName}%`);
             }
-    
-            if (firstName || lastName) {
-                query += ' WHERE';
-                if (firstName) {
-                    query += ' u.firstName LIKE ?';
-                    params.push(`%${firstName}%`);
-                }
-                if (lastName) {
-                    query += firstName ? ' AND' : '';
-                    query += ' u.lastName LIKE ?';
-                    params.push(`%${lastName}%`);
-                }
+            if (lastName) {
+                query += firstName ? ' AND' : '';
+                query += ' u.lastName LIKE ?';
+                params.push(`%${lastName}%`);
             }
-    
+            
             query += ' ORDER BY u.id';
             query += ' LIMIT ? OFFSET ?';
             params.push(PAGE_SIZE, (page - 1) * PAGE_SIZE);
+        }
+
+        return { query, params };
+    }
+
+    async getUsers(firstName?: string, lastName?: string, hobby?: number, page: number = 1): Promise<Omit<User, 'password'>[]> {
+        try {
+            
+            let {query, params} = await this.getUsersQuery(firstName, lastName, hobby, page);
     
             const users: User[] = await new Promise<User[]>((resolve, reject) => {
                 this.db.all(query, params, async (err, rows: User[]) => {
@@ -283,74 +362,6 @@ export class UserSQLiteManager {
         return new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.updatePhoto, [photo, userId], err => err ? reject(err) : resolve());
         });
-    }
-
-    async changeEmailbyId(id: number, email: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.db.run(userQueries.updateEmailById, [email, id], function(err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    if (this.changes === 0) {
-                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
-                        reject(noChangesError);
-                    } else {
-                        resolve();
-                    }
-                }
-            });
-        });
-    }
-
-    async changeFirstNamebyId(id: number, firstName : string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.db.run(userQueries.updateFirstNameById, [firstName, id], function(err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    if (this.changes === 0) {
-                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
-                        reject(noChangesError);
-                    } else {
-                        resolve();
-                    }
-                }
-            });
-        });
-    } 
-
-    async changeGenderbyId(id: number, gender : string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.db.run(userQueries.updateGenderById, [gender, id], function(err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    if (this.changes === 0) {
-                        const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
-                        reject(noChangesError);
-                    } else {
-                        resolve();
-                    }
-                }
-            });
-        });
-    }
- 
-    async changePasswordbyId(id: number, newPassword: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        this.db.run(userQueries.updatePasswordById, [newPassword, id], function(err) {
-            if (err) {
-                reject(err);
-            } else {
-                if (this.changes === 0) {
-                    const noChangesError = new Error("No se realizó ningún cambio en la contraseña");
-                    reject(noChangesError);
-                } else {
-                    resolve();
-                }
-            }
-        });
-    });
     }
 
     async getAllHobbies(): Promise<{ id: number; name: string }[]> {

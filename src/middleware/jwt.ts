@@ -83,6 +83,8 @@ function verifyToken(token: string): TokenInfo {
     try {
         return jwt.verify(token, secretKey) as TokenInfo;
     } catch (error) {
+        if (error instanceof jwt.TokenExpiredError)
+            throw error;
         throw new InvalidTokenError();
     }
 }

@@ -2,10 +2,12 @@ import { Request, Response } from 'express';
 import HTTPErrorCodes from '../utilities/httpErrorCodes';
 import fs from 'fs';
 import { UserService } from '../services/user';
-import updateableUserProperties from '../model/updateableUserProperties';
+import { updateableUserProperties } from '../model/updateableUserProperties';
 import HTTPSuccessCodes from '../utilities/httpSuccessCodes';
 import { Gender } from '../model/gender';
 import { InvalidSizeError } from '../services/photoUploader/errors';
+import { ProfileUpdater } from '../services/profileUpdater/profile';
+import { userValidSchema } from '../model/userValidSchema';
 
 function getProfile(req: Request, res: Response) {
     const id = req.body.user.id;
@@ -88,51 +90,41 @@ const operationsHandlers: Record<string, (id: number, value: string, userService
     [updateableUserProperties.firstName]: updateFirstName
 };
 
-const areOptionsValid = (options: any): boolean => {
-    const enumKeys = Object.keys(updateableUserProperties);
-
-    for (const key in options) {
-        if (!enumKeys.includes(key)) {
-            return false;
-        }
-    }
-
-    return true;
-};
 
 async function updateProfile(req: Request, res: Response) {
-    const userService = new UserService();
-    const updates = req.body;
-    const id = req.body.user.id;
+    const profileUpdater = new ProfileUpdater();
+    try {
+        profileUpdater.update(req.body, req.body.user.id);
 
-    if ('user' in updates) {
-        delete updates.user;
     }
+    catch(error) {
+
+    }
+
+    return res.status(HTTPSuccessCodes.OK).json("Ok");
 
     // Verificar si las operaciones en el cuerpo de la solicitud son válidas
-    if (!areOptionsValid(updates)) {
-        return res.status(HTTPErrorCodes.BadRequest).json({ error: 'Invalid updates!' });
-    }
+    // if (!areOptionsValid(updates)) {
+    //     return res.status(HTTPErrorCodes.BadRequest).json({ error: 'Invalid updates!' });
+    // }
 
-    if (!Object.values(Gender).includes(updates.gender as Gender)) {
-        return res.status(HTTPErrorCodes.BadRequest).json({ error: `Invalid gender: ${updates.gender}` });
-    }
+    // if (Gender.isValid(updates)) {}
 
-    try {
-        // Iterar sobre las opciones válidas y llamar a la función correspondiente para cada una
-        for (const key of Object.keys(updates)) {
-            const update = key as updateableUserProperties;
-            const newValue = updates[update];
-            if (operationsHandlers[update]) {
-                await operationsHandlers[update](id, newValue, userService); // Llama a la función correspondiente
-            }
-        }
+    // try {
+    //     // Iterar sobre las opciones válidas y llamar a la función correspondiente para cada una
+    //     for (const key of Object.keys(updates)) {
+    //         const update = key as updateableUserProperties;
+    //         const newValue = updates[update];
+    //         if (operationsHandlers[update]) {
+    //             await operationsHandlers[update](id, newValue, userService); // Llama a la función correspondiente
+    //         }
+    //     }
 
-        let user = await userService.getUserById(id);
-        return res.status(HTTPSuccessCodes.OK).json(user);
-    } catch (error) {
-        return res.status(HTTPErrorCodes.InternalServerError).json({ error: 'An error occurred while updating profile' });
-    }
+    //     let user = await userService.getUserById(id);
+    //     return res.status(HTTPSuccessCodes.OK).json(user);
+    // } catch (error) {
+    //     return res.status(HTTPErrorCodes.InternalServerError).json({ error: 'An error occurred while updating profile' });
+    // }
 }
 
 function getFollowers(req: Request, res: Response) {

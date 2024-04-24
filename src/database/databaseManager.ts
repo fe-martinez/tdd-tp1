@@ -133,11 +133,11 @@ export class UserSQLiteManager {
             await this.db.run(query as string, params);
         }
         catch (error) {
-            console.log(error);
+            throw(error);
         }
     }
 
-    async getUsersQuery(firstName?: string, lastName?: string, hobby?: number, page: number = 1) {
+    getUsersQuery(firstName?: string, lastName?: string, hobby?: number, page: number = 1): { query: string, params: any[] } {
         let query = userQueries.getAllUsers;
         let params = [];
 
@@ -156,20 +156,19 @@ export class UserSQLiteManager {
                 query += firstName ? ' AND' : '';
                 query += ' u.lastName LIKE ?';
                 params.push(`%${lastName}%`);
-            }
-            
-            query += ' ORDER BY u.id';
-            query += ' LIMIT ? OFFSET ?';
-            params.push(PAGE_SIZE, (page - 1) * PAGE_SIZE);
+            }            
         }
+
+        query += ' ORDER BY u.id';
+        query += ' LIMIT ? OFFSET ?';
+        params.push(PAGE_SIZE, (page - 1) * PAGE_SIZE);
 
         return { query, params };
     }
 
     async getUsers(firstName?: string, lastName?: string, hobby?: number, page: number = 1): Promise<Omit<User, 'password'>[]> {
         try {
-            
-            let {query, params} = await this.getUsersQuery(firstName, lastName, hobby, page);
+            let {query, params} = this.getUsersQuery(firstName, lastName, hobby, page);
     
             const users: User[] = await new Promise<User[]>((resolve, reject) => {
                 this.db.all(query, params, async (err, rows: User[]) => {
@@ -259,13 +258,13 @@ export class UserSQLiteManager {
         }
     }
 
-    async getFollowingByUserId(userId: number): Promise<User[]> {
-        return new Promise<User[]>((resolve, reject) => {
-            this.db.all(userQueries.getFollowingByUserIdQuery, [userId], (err, rows: User[]) => {
+    async getFollowingByUserId(userId: number): Promise<Omit<User, 'password'>[]> { 
+        return new Promise<Omit<User, 'password'>[]>((resolve, reject) => {
+            this.db.all(userQueries.getFollowingByUserIdQuery, [userId], (err, rows: Omit<User, 'password'>[]) => {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(rows);
+                    resolve(rows as Omit<User, 'password'>[]);
                 }
             });
         });
@@ -287,7 +286,7 @@ export class UserSQLiteManager {
         }
     }
 
-    async followUser(followerId: number, followedId: number): Promise<User> {
+    async followUser(followerId: number, followedId: number): Promise<Omit<User, 'password'>> {
         await this.checkIfSameUser(followerId, followedId);
         await this.checkIfAlreadyFollowing(followerId, followedId);
     
@@ -301,8 +300,8 @@ export class UserSQLiteManager {
             });
         });
         
-        return new Promise<User>((resolve, reject) => {
-            this.db.get(userQueries.getUserById, [followedId], (err, row: User | undefined) => {
+        return new Promise<Omit<User, 'password'>>((resolve, reject) => {
+            this.db.get(userQueries.getUserById, [followedId], (err, row: Omit<User, 'password'> | undefined) => {
                 if (err) {
                     reject(err);
                 } else if (!row) {
@@ -314,13 +313,13 @@ export class UserSQLiteManager {
         });
     }
         
-    async getFollowersByUserId(userId: number): Promise<User[]> {
-        return new Promise<User[]>((resolve, reject) => {
-            this.db.all(userQueries.getFollowersByUserIdQuery, [userId], (err, rows: User[]) => {
+    async getFollowersByUserId(userId: number): Promise<Omit<User, 'password'>[]> {
+        return new Promise<Omit<User, 'password'>[]>((resolve, reject) => {
+            this.db.all(userQueries.getFollowersByUserIdQuery, [userId], (err, rows: Omit<User, 'password'>[]) => {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(rows);
+                    resolve(rows as Omit<User, 'password'>[]);
                 }
             });
         });
@@ -338,18 +337,6 @@ export class UserSQLiteManager {
         });
     }
     
-    getEmailRow(email: String): Promise<User> {
-        return new Promise<User>((resolve, reject) => {
-            this.db.get(userQueries.getPassword, [email], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row as User);
-                }
-            });
-        });
-    }
-
     getUserByEmail(email: String): Promise<User | null> {
         return new Promise<User | null>((resolve, reject) => {
             this.db.get(userQueries.getUserByEmail,

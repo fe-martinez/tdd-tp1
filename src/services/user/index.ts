@@ -51,7 +51,7 @@ export class UserService {
         return createdUser;
     }
 
-    async followUser(userIdToFollow: number, followerUserId: number): Promise<User> {
+    async followUser(userIdToFollow: number, followerUserId: number): Promise<Omit<User, 'password'>> {
         try {
             return await this.sqliteManager.followUser(userIdToFollow, followerUserId);
         } catch (err) {
@@ -59,7 +59,7 @@ export class UserService {
         }
     }
 
-    async getFollowersByUserId(userId: number): Promise<User[]> {
+    async getFollowersByUserId(userId: number): Promise<Omit<User, 'password'>[]> {
         try {
             const followers = await this.sqliteManager.getFollowersByUserId(userId);
             return followers;
@@ -77,18 +77,8 @@ export class UserService {
         }
     }
 
-    async getFollowingByUserId(userId: number): Promise<User[]> {
+    async getFollowingByUserId(userId: number): Promise<Omit<User, 'password'>[]> {
         return this.sqliteManager.getFollowingByUserId(userId);
-    }
-
-    async getUserPassword(email: String): Promise<String> {
-        const user = await this.sqliteManager.getEmailRow(email);
-        if (user) {
-            return user.password;
-        } else {
-            throw new Error('Email not found in the db');
-        }
-
     }
 
     async getUserByEmail(email: String): Promise<User | null> {

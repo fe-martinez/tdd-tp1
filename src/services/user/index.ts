@@ -62,7 +62,6 @@ export class UserService {
     async getFollowersByUserId(userId: number): Promise<Omit<User, 'password'>[]> {
         try {
             const followers = await this.sqliteManager.getFollowersByUserId(userId);
-            console.log(followers);
             return followers;
         } catch (error) {
             throw new Error('Error while getting followers by user ID: ' + error);

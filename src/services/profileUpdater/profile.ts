@@ -2,6 +2,7 @@ import { updateableUserProperties } from "../../model/updateableUserProperties";
 import { firstNameValidSchema, emailValidSchema, genderValidSchema, passwordValidSchema } from '../../model/userValidSchema';
 import { UserSQLiteManager } from "../../database/databaseManager";
 import bcrypt from 'bcrypt';
+import { BadRequestError, InternalServerError } from "./errors";
 
 const saltRounds = 10;
 
@@ -47,7 +48,7 @@ export class ProfileUpdater {
             await this.dbManager.updateProfile(id, updates);
         }
         catch (error) {
-            console.log(error);
+            throw error;
         }
     }
 
@@ -59,7 +60,7 @@ export class ProfileUpdater {
             updates.set(updateableUserProperties.password, hashedPassword);
           }
           catch (error) {
-            console.log(error);
+            throw new InternalServerError('');
           }
         }
     }
@@ -70,7 +71,7 @@ export class ProfileUpdater {
             if (handler) {
               const isValid = await handler(id, value);
               if (!isValid) {
-                throw new Error('Invalid updates');
+                throw new BadRequestError('Invalid specifications for updates');
               }
             }
           }
@@ -84,6 +85,11 @@ export class ProfileUpdater {
         for (var i = 0; i < keys.length; i++) {
             if (updateableUserProperties.isValid(keys[i])) {
                 updates.set(keys[i], values[i] as string);
+            } else if (keys[i] == 'user') {
+              continue;
+            }
+            else {
+              throw new BadRequestError('Invalid updates');
             }
         }
         return updates

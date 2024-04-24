@@ -8,6 +8,7 @@ import { Gender } from '../model/gender';
 import { InvalidSizeError } from '../services/photoUploader/errors';
 import { ProfileUpdater } from '../services/profileUpdater/profile';
 import { userValidSchema } from '../model/userValidSchema';
+import { BadRequestError, InternalServerError } from '../services/profileUpdater/errors';
 
 function getProfile(req: Request, res: Response) {
     const id = req.body.user.id;
@@ -69,14 +70,18 @@ function deleteProfilePhoto(req: Request, res: Response) {
 async function updateProfile(req: Request, res: Response) {
     const profileUpdater = new ProfileUpdater();
     try {
-        profileUpdater.update(req.body, req.body.user.id);
-
+        await profileUpdater.update(req.body, req.body.user.id);
+        return res.status(HTTPSuccessCodes.OK).json("Ok");
     }
     catch(error) {
-
+        let err = error as Error;
+        if (error == BadRequestError) {
+            return res.status(HTTPErrorCodes.BadRequest).json(err.message);
+        }
+        else {
+            return res.status(HTTPErrorCodes.InternalServerError).json(err.message);
+        }
     }
-
-    return res.status(HTTPSuccessCodes.OK).json("Ok");
 }
 
 function getFollowers(req: Request, res: Response) {

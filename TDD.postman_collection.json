@@ -1,0 +1,1900 @@
+{
+	"info": {
+		"_postman_id": "59acb81a-85a6-4685-912d-555a64fcde37",
+		"name": "TDD",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27404503"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"var token = jsonData.accessToken;",
+							"var refreshToken = jsonData.refreshToken;",
+							"",
+							"pm.environment.set(\"access_token\", token);",
+							"pm.environment.set(\"refresh_token\", refreshToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/login",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "440"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1b8-XmdVqXzt+xv4UkUZ/M/2mqwT7nA\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 14:26:11 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJyZ2VzdG9zb0BmaS51YmEuYXIiLCJpc1JlZnJlc2giOmZhbHNlLCJpYXQiOjE3MTM5Njg3NzEsImV4cCI6MTcxMzk2OTA3MX0.1YS54u1OQGJK6I1QbzP1lUqjyzvEf4YGF35Sp3MpXtw\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJyZ2VzdG9zb0BmaS51YmEuYXIiLCJpc1JlZnJlc2giOnRydWUsImRhdGUiOjE3MTM5Njg3NzE2OTksImlhdCI6MTcxMzk2ODc3MX0.wuXGeuOq6YuTHTETjzOzmj4WFHn_IMs--c-3X7N0cAk\"\n}"
+				},
+				{
+					"name": "Error: user not exists",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/login",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "15"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"f-hgwAdInPTk6s9xk2cVwlBcn24xc\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 14:26:36 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "User not exists"
+				},
+				{
+					"name": "Error: incorrect password",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/login",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "23"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"17-Kv5tHYVqEerwwKEDFbkqRt57I0U\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 14:26:50 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "User incorrect password"
+				}
+			]
+		},
+		{
+			"name": "Refresh token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"var token = jsonData.accessToken;\r",
+							"var refreshToken = jsonData.refreshToken;\r",
+							"\r",
+							"pm.environment.set(\"access_token\", token);\r",
+							"pm.environment.set(\"refresh_token\", refreshToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{refresh_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/login/refresh",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"login",
+						"refresh"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/login/refresh",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login",
+								"refresh"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "440"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1b8-a3Ygtz/sHCjE7c7S81AOBMJ5sIA\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 14:29:52 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJyZ2VzdG9zb0BmaS51YmEuYXIiLCJpc1JlZnJlc2giOmZhbHNlLCJpYXQiOjE3MTM5Njg5OTIsImV4cCI6MTcxMzk2OTI5Mn0.RlsIYW1Tl6FSxfiu-EJqJnd3NyI1hRJEj1bUbjry8W8\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJyZ2VzdG9zb0BmaS51YmEuYXIiLCJpc1JlZnJlc2giOnRydWUsImRhdGUiOjE3MTM5Njg5OTIyMTcsImlhdCI6MTcxMzk2ODk5Mn0.DUSye5qlGDVy4zLKlM0x8TRauxmsKtvqCL6jmjt-MWI\"\n}"
+				},
+				{
+					"name": "Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/login/refresh",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login",
+								"refresh"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/plain; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "9"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"9-PatfYBLj4Um1qTm5zrukoLhNyPU\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 14:28:31 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "Forbidden"
+				}
+			]
+		},
+		{
+			"name": "Sign Up",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Clari\",\r\n    \"lastName\": \"rf\",\r\n    \"email\": \"gmail@gmail.com\",\r\n    \"password\": \"Password\",\r\n    \"birthDate\": \"2021-03-25\",\r\n    \"gender\": \"female\",\r\n    \"hobbies\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/signup",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"signup"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Clari\",\r\n    \"lastName\": \"rf\",\r\n    \"email\": \"gmail@gmail.com\",\r\n    \"password\": \"Password\",\r\n    \"birthDate\": \"2021-03-25\",\r\n    \"gender\": \"female\",\r\n    \"hobbies\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/signup",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"signup"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "137"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"89-vbIJAeQJplZjNfTEG/IIiu5lwM0\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 14:31:54 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 4,\n    \"firstName\": \"Clari\",\n    \"lastName\": \"rf\",\n    \"email\": \"gmail@gmail.com\",\n    \"photo\": \"\",\n    \"birthDate\": \"2021-03-25\",\n    \"gender\": \"female\",\n    \"hobbies\": []\n}"
+				},
+				{
+					"name": "Error: password",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Clari\",\r\n    \"lastName\": \"rf\",\r\n    \"email\": \"gmail@gmail.com\",\r\n    \"password\": \"password\",\r\n    \"birthDate\": \"2021-03-25\",\r\n    \"gender\": \"female\",\r\n    \"hobbies\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/signup",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"signup"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "68"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"44-M1rzjbtrmnXO1wlP811Fj9qEams\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 14:31:29 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"\\\"password\\\" length must be at least 8 characters long\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get own profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/profile",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"profile"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "186"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"ba-bYN6cJ9sRXIrkoEzJq/AoS8rqOE\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 14:33:00 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"firstName\": \"ramiro\",\n    \"lastName\": \"gestoso\",\n    \"email\": \"rgestoso@fi.uba.ar\",\n    \"photo\": \"./public/profilePhotos/1.jpg\",\n    \"birthDate\": \"2010-10-10T03:00:00.000Z\",\n    \"gender\": \"male\",\n    \"hobbies\": []\n}"
+				},
+				{
+					"name": "Error: token expired",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "15"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"f-khqAtkkWMtDhQXOtw7Lm405pJIU\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:05:30 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "\"Token Expired\""
+				}
+			]
+		},
+		{
+			"name": "Get another user profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/users/{{id}}/profile",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"{{id}}",
+						"profile"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users/{{id}}/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{id}}",
+								"profile"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "186"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"ba-bYN6cJ9sRXIrkoEzJq/AoS8rqOE\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:07:03 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"firstName\": \"ramiro\",\n    \"lastName\": \"gestoso\",\n    \"email\": \"rgestoso@fi.uba.ar\",\n    \"photo\": \"./public/profilePhotos/1.jpg\",\n    \"birthDate\": \"2010-10-10T03:00:00.000Z\",\n    \"gender\": \"male\",\n    \"hobbies\": []\n}"
+				},
+				{
+					"name": "Error: user not found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users/{{id}}/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{id}}",
+								"profile"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "28"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1c-ZEVVcvtFhxKX/QUvVKqKxwGbbNA\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:06:14 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"User not found\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Follow user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/users/{{id}}/follow",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"{{id}}",
+						"follow"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users/{{id}}/follow",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{id}}",
+								"follow"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "198"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"c6-kdkdrbm8k9ENmPySyAvzkZ47Pfs\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:09:52 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 4,\n    \"firstName\": \"Clari\",\n    \"lastName\": \"rf\",\n    \"email\": \"gmail@gmail.com\",\n    \"password\": \"$2b$10$cHVnaiOenwQOGd.LmT5a0uUhMTF2oYvMDim.BkNY2v2taNiE0uxOG\",\n    \"photo\": \"\",\n    \"birthDate\": \"2021-03-25\",\n    \"gender\": \"female\"\n}"
+				},
+				{
+					"name": "Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users/{{id}}/follow",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{id}}",
+								"follow"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "51"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"33-bKyw7fpJTA/GrmZg/KXjh6Rubco\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:09:04 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Error while following user\",\n    \"error\": {}\n}"
+				}
+			]
+		},
+		{
+			"name": "Unfollow user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/users/2/follow",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"2",
+						"follow"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users/2/follow",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"2",
+								"follow"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "41"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"29-q4/gJCACR4OYe+trGtVbIsMCQI8\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:10:50 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"User unfollowed succesfully\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					],
+					"query": [
+						{
+							"key": "firstName",
+							"value": "firstName",
+							"disabled": true
+						},
+						{
+							"key": "lastName",
+							"value": "lastName",
+							"disabled": true
+						},
+						{
+							"key": "hobby",
+							"value": "hobby",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							],
+							"query": [
+								{
+									"key": "firstName",
+									"value": "firstName",
+									"disabled": true
+								},
+								{
+									"key": "lastName",
+									"value": "lastName",
+									"disabled": true
+								},
+								{
+									"key": "hobby",
+									"value": "hobby",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "614"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"266-+asjQtf5/l1sLLZ8DCeoMJerV1k\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:14:07 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"firstName\": \"ramiro\",\n        \"lastName\": \"gestoso\",\n        \"email\": \"rgestoso@fi.uba.ar\",\n        \"photo\": \"./public/profilePhotos/1.jpg\",\n        \"birthDate\": \"10/10/2010\",\n        \"gender\": \"male\",\n        \"hobbies\": []\n    },\n    {\n        \"id\": 2,\n        \"firstName\": \"ramiro\",\n        \"lastName\": \"gestoso\",\n        \"email\": \"2rgestoso@fi.uba.ar\",\n        \"photo\": \"\",\n        \"birthDate\": \"10/10/2010\",\n        \"gender\": \"male\",\n        \"hobbies\": []\n    },\n    {\n        \"id\": 3,\n        \"firstName\": \"ramiro\",\n        \"lastName\": \"gestoso\",\n        \"email\": \"rgestoso\",\n        \"photo\": \"./public/images/3.jpg\",\n        \"birthDate\": \"10/10/2010\",\n        \"gender\": \"male\",\n        \"hobbies\": []\n    },\n    {\n        \"id\": 4,\n        \"firstName\": \"Clari\",\n        \"lastName\": \"rf\",\n        \"email\": \"gmail@gmail.com\",\n        \"photo\": \"\",\n        \"birthDate\": \"2021-03-25\",\n        \"gender\": \"female\",\n        \"hobbies\": []\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Get own following users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/profile/following",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"profile",
+						"following"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/profile/following",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"following"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "407"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"197-MlVaYsOaX3BWmb+nlR39ssiMJrE\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:15:33 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 4,\n        \"firstName\": \"Clari\",\n        \"lastName\": \"rf\",\n        \"email\": \"gmail@gmail.com\",\n        \"password\": \"$2b$10$cHVnaiOenwQOGd.LmT5a0uUhMTF2oYvMDim.BkNY2v2taNiE0uxOG\",\n        \"photo\": \"\",\n        \"birthDate\": \"2021-03-25\",\n        \"gender\": \"female\"\n    },\n    {\n        \"id\": 2,\n        \"firstName\": \"ramiro\",\n        \"lastName\": \"gestoso\",\n        \"email\": \"2rgestoso@fi.uba.ar\",\n        \"password\": \"$2b$10$co9bzsQjv145U0zlsaP2veayQZcAN5QaAUEsbu8Bso1tPCL0PLGa.\",\n        \"photo\": \"\",\n        \"birthDate\": \"10/10/2010\",\n        \"gender\": \"male\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Get own followers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/profile/followers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"profile",
+						"followers"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/profile/followers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"followers"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "200"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"c8-WhA6pMPGDFv0qCDc8mV2eOuTFTQ\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:20:48 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 4,\n        \"firstName\": \"Clari\",\n        \"lastName\": \"rf\",\n        \"email\": \"gmail@gmail.com\",\n        \"password\": \"$2b$10$cHVnaiOenwQOGd.LmT5a0uUhMTF2oYvMDim.BkNY2v2taNiE0uxOG\",\n        \"photo\": \"\",\n        \"birthDate\": \"2021-03-25\",\n        \"gender\": \"female\"\n    }\n]"
+				},
+				{
+					"name": "Success: cero followers",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/profile/followers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"followers"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "2"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:19:16 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[]"
+				}
+			]
+		},
+		{
+			"name": "Update profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\": \"Pass1234word\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/profile",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"profile"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"Pass1234word\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "4"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"4-NOgEnJ+fOCweG+agGSZ3q50G9wM\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:34:36 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "\"Ok\""
+				},
+				{
+					"name": "Error: invalid update",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"field\": \"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "17"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"11-U9scv9rd0PHVaKFSBWdsBPFojzk\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:35:59 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "\"Invalid updates\""
+				}
+			]
+		},
+		{
+			"name": "Upload image",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "photo",
+							"type": "file",
+							"src": "/C:/Users/ramir/Pictures/burro2.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/profile/photo",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"profile",
+						"photo"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photo",
+									"type": "file",
+									"src": "/C:/Users/ramir/Pictures/burro2.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/profile/photo",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"photo"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/plain; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "7"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"7-rM9AyJuqT6iOan/xHh+AW+7K/T8\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:23:01 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "Created"
+				},
+				{
+					"name": "Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photo",
+									"type": "file",
+									"src": "/C:/Users/ramir/Pictures/wallpapers/84248.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/profile/photo",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"photo"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "67"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"43-ciOmHNT/7i3mEtXBEHnw7WChj90\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:23:19 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "The photo must be between 256x256 and 1024x1024. Current: 2560x1440"
+				}
+			]
+		},
+		{
+			"name": "Get another user followers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/users/{{id}}/profile/followers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"{{id}}",
+						"profile",
+						"followers"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users/{{id}}/profile/followers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{id}}",
+								"profile",
+								"followers"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "235"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"eb-ONsCI7uLl17dpbdX7R+I9TdSLJ8\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:24:08 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"firstName\": \"ramiro\",\n        \"lastName\": \"gestoso\",\n        \"email\": \"rgestoso@fi.uba.ar\",\n        \"password\": \"$2b$10$2vN7JPdUhjOGbEk8g/7LS.57r5rtKgCJorOvBi73GRsk2JRtLs/ai\",\n        \"photo\": \"./public/profilePhotos/1.jpg\",\n        \"birthDate\": \"10/10/2010\",\n        \"gender\": \"male\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Get another user following",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/users/{{id}}/profile/following",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"{{id}}",
+						"profile",
+						"following"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users/{{id}}/profile/following",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{id}}",
+								"profile",
+								"following"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "235"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"eb-ONsCI7uLl17dpbdX7R+I9TdSLJ8\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Apr 2024 15:25:34 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"firstName\": \"ramiro\",\n        \"lastName\": \"gestoso\",\n        \"email\": \"rgestoso@fi.uba.ar\",\n        \"password\": \"$2b$10$2vN7JPdUhjOGbEk8g/7LS.57r5rtKgCJorOvBi73GRsk2JRtLs/ai\",\n        \"photo\": \"./public/profilePhotos/1.jpg\",\n        \"birthDate\": \"10/10/2010\",\n        \"gender\": \"male\"\n    }\n]"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "localhost:3000"
+		}
+	]
+}

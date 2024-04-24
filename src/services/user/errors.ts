@@ -12,4 +12,11 @@ class UserIncorrectPasswordError extends Error {
     }
 }
 
-export { UserNotExistsError, UserIncorrectPasswordError }
+class AlreadyFollowingError extends Error {
+    constructor() {
+        super('Already following user');
+        this.name = 'AlreadyFollowingError';
+    }
+}
+
+export { UserNotExistsError, UserIncorrectPasswordError, AlreadyFollowingError }

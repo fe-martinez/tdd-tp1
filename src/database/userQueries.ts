@@ -33,7 +33,7 @@ WHERE follower_id = ? AND followed_id = ?;
 `;
 
 export const checkFollowQuery = `
-SELECT * FROM user_follows
+SELECT 1 FROM user_follows
 WHERE follower_id = ? AND followed_id = ?;
 `;
 
@@ -65,3 +65,5 @@ INNER JOIN (
 export const getHobbyNameById = `
 SELECT name FROM hobbies WHERE id = ?
 `;
+
+export const userExists = `SELECT 1 FROM users WHERE id = ?`;

@@ -12,8 +12,8 @@ export class UserSQLiteManager {
     constructor() {
         const DATABASE_PATH = process.env.DB_PATH;
 
-        if(!DATABASE_PATH) {
-            throw(new Error('Database path not defined in env'));
+        if (!DATABASE_PATH) {
+            throw (new Error('Database path not defined in env'));
         }
 
         this.db = new sqlite3.Database(DATABASE_PATH);
@@ -35,13 +35,13 @@ export class UserSQLiteManager {
     insertHobby(userID: Number, hobby: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.insertHobby, [userID, hobby], (err) => {
-                if(err) {
+                if (err) {
                     reject(err);
                 } else {
                     resolve();
                 }
             });
-        }); 
+        });
     }
 
     createUser(user: Omit<User, 'id'>): Promise<Omit<User, 'password'>> {
@@ -67,8 +67,8 @@ export class UserSQLiteManager {
     }
 
     private async getUpdateProfileQuery(id: number, firstName?: string, email?: string, gender?: string, password?: string) {
-        let query : String = new String('UPDATE users SET ');
-        let params : String[] = [];
+        let query: String = new String('UPDATE users SET ');
+        let params: String[] = [];
 
         if (firstName) {
             query = query.concat('firstName = ?, ');
@@ -97,7 +97,7 @@ export class UserSQLiteManager {
 
         query = query.concat('WHERE id = ?');
         params.push(id.toString());
-        return {query, params}
+        return { query, params }
     }
 
     private async extractUpdates(updates: Map<string, string>) {
@@ -105,35 +105,35 @@ export class UserSQLiteManager {
         let email: string | undefined;
         let gender: string | undefined;
         let password: string | undefined;
-      
+
         for (const [key, value] of updates.entries()) {
-          switch (key) {
-            case updateableUserProperties.firstName:
-                firstName = value;
-                break;
-            case updateableUserProperties.email:
-                email = value;
-                break;
-            case updateableUserProperties.gender:
-                gender = value;
-                break;
-            case updateableUserProperties.password:
-                password = value;
-                break;
-          }
-        
+            switch (key) {
+                case updateableUserProperties.firstName:
+                    firstName = value;
+                    break;
+                case updateableUserProperties.email:
+                    email = value;
+                    break;
+                case updateableUserProperties.gender:
+                    gender = value;
+                    break;
+                case updateableUserProperties.password:
+                    password = value;
+                    break;
+            }
+
         }
-        return {firstName, email, gender, password}
+        return { firstName, email, gender, password }
     }
 
     async updateProfile(id: number, updates: Map<string, string>) {
         try {
-            let {firstName, email, gender, password} = await this.extractUpdates(updates);
-            let {query, params} = await this.getUpdateProfileQuery(id, firstName, email, gender, password);
+            let { firstName, email, gender, password } = await this.extractUpdates(updates);
+            let { query, params } = await this.getUpdateProfileQuery(id, firstName, email, gender, password);
             await this.db.run(query as string, params);
         }
         catch (error) {
-            throw(error);
+            throw (error);
         }
     }
 
@@ -156,7 +156,7 @@ export class UserSQLiteManager {
                 query += firstName ? ' AND' : '';
                 query += ' u.lastName LIKE ?';
                 params.push(`%${lastName}%`);
-            }            
+            }
         }
 
         query += ' ORDER BY u.id';
@@ -168,8 +168,8 @@ export class UserSQLiteManager {
 
     async getUsers(firstName?: string, lastName?: string, hobby?: number, page: number = 1): Promise<Omit<User, 'password'>[]> {
         try {
-            let {query, params} = this.getUsersQuery(firstName, lastName, hobby, page);
-    
+            let { query, params } = this.getUsersQuery(firstName, lastName, hobby, page);
+
             const users: User[] = await new Promise<User[]>((resolve, reject) => {
                 this.db.all(query, params, async (err, rows: User[]) => {
                     if (err) {
@@ -191,7 +191,7 @@ export class UserSQLiteManager {
             throw error;
         }
     }
-    
+
     async getUserHobbies(userId: number): Promise<string[]> {
         try {
             const hobbyRows: { name: string }[] = await new Promise<{ name: string }[]>((resolve, reject) => {
@@ -210,7 +210,7 @@ export class UserSQLiteManager {
             throw error;
         }
     }
-    
+
     async getUserById(userId: number): Promise<Omit<User, 'password'> | null> {
         try {
             const user: Omit<User, 'password'> | null = await new Promise<Omit<User, 'password'> | null>((resolve, reject) => {
@@ -224,12 +224,12 @@ export class UserSQLiteManager {
                                 firstName: row.firstName,
                                 lastName: row.lastName,
                                 email: row.email,
-                                    photo: row.photo,
+                                photo: row.photo,
                                 birthDate: new Date(row.birthDate),
                                 gender: row.gender,
                                 hobbies: []
                             };
-    
+
                             try {
                                 user.hobbies = await this.getUserHobbies(userId);
                                 resolve(user);
@@ -247,7 +247,7 @@ export class UserSQLiteManager {
             throw error;
         }
     }
-        
+
 
     private async checkIfSameUser(followerId: number, followedId: number): Promise<void> {
         if (followerId === followedId) {
@@ -258,7 +258,7 @@ export class UserSQLiteManager {
         }
     }
 
-    async getFollowingByUserId(userId: number): Promise<Omit<User, 'password'>[]> { 
+    async getFollowingByUserId(userId: number): Promise<Omit<User, 'password'>[]> {
         return new Promise<Omit<User, 'password'>[]>((resolve, reject) => {
             this.db.all(userQueries.getFollowingByUserIdQuery, [userId], (err, rows: Omit<User, 'password'>[]) => {
                 if (err) {
@@ -269,9 +269,9 @@ export class UserSQLiteManager {
             });
         });
     }
-    
-    private async checkIfAlreadyFollowing(followerId: number, followedId: number): Promise<void> {
-        const alreadyFollowing = await new Promise<boolean>((resolve, reject) => {
+
+    async checkIfAlreadyFollowing(followerId: number, followedId: number): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
             this.db.get(userQueries.checkFollowQuery, [followerId, followedId], (err, row) => {
                 if (err) {
                     reject(err);
@@ -280,16 +280,9 @@ export class UserSQLiteManager {
                 }
             });
         });
-
-        if (alreadyFollowing) {
-            throw new Error('El seguidor ya está siguiendo al usuario');
-        }
     }
 
     async followUser(followerId: number, followedId: number): Promise<Omit<User, 'password'>> {
-        await this.checkIfSameUser(followerId, followedId);
-        await this.checkIfAlreadyFollowing(followerId, followedId);
-    
         await new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.insertFollowQuery, [followerId, followedId], function (err) {
                 if (err) {
@@ -299,7 +292,7 @@ export class UserSQLiteManager {
                 }
             });
         });
-        
+
         return new Promise<Omit<User, 'password'>>((resolve, reject) => {
             this.db.get(userQueries.getUserById, [followedId], (err, row: Omit<User, 'password'> | undefined) => {
                 if (err) {
@@ -312,7 +305,7 @@ export class UserSQLiteManager {
             });
         });
     }
-        
+
     async getFollowersByUserId(userId: number): Promise<Omit<User, 'password'>[]> {
         return new Promise<Omit<User, 'password'>[]>((resolve, reject) => {
             this.db.all(userQueries.getFollowersByUserIdQuery, [userId], (err, rows: Omit<User, 'password'>[]) => {
@@ -324,7 +317,7 @@ export class UserSQLiteManager {
             });
         });
     }
-    
+
     async unfollowUser(followerId: number, userIdToUnfollow: number): Promise<void> {
         await new Promise<void>((resolve, reject) => {
             this.db.run(userQueries.deleteFollowQuery, [followerId, userIdToUnfollow], function (err) {
@@ -336,7 +329,7 @@ export class UserSQLiteManager {
             });
         });
     }
-    
+
     getUserByEmail(email: String): Promise<User | null> {
         return new Promise<User | null>((resolve, reject) => {
             this.db.get(userQueries.getUserByEmail,
@@ -358,6 +351,18 @@ export class UserSQLiteManager {
                     reject(err);
                 } else {
                     resolve(rows);
+                }
+            });
+        });
+    }
+
+    userExists(userId: number): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.db.get(userQueries.userExists, [userId], (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(!!row);
                 }
             });
         });

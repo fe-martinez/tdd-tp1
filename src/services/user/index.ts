@@ -5,7 +5,7 @@ import { Gender } from '../../model/gender';
 import { Hobby } from '../../model/hobby';
 import { PhotoUploader } from './../photoUploader';
 import { Token } from '../../model/token';
-import { UserIncorrectPasswordError, UserNotExistsError } from './../user/errors';
+import { UserIncorrectPasswordError, UserNotExistsError, AlreadyFollowingError } from './../user/errors';
 import jwt from '../../middleware/jwt';
 const saltRounds = 10;
 
@@ -51,12 +51,13 @@ export class UserService {
         return createdUser;
     }
 
-    async followUser(userIdToFollow: number, followerUserId: number): Promise<Omit<User, 'password'>> {
-        try {
-            return await this.sqliteManager.followUser(userIdToFollow, followerUserId);
-        } catch (err) {
-            throw new Error('Error while following user: ' + err);
-        }
+    async followUser(followerId: number, followedId: number): Promise<Omit<User, 'password'>> {
+        return this.sqliteManager.checkIfAlreadyFollowing(followerId, followedId)
+            .then(alreadyFollowing => {
+                if (alreadyFollowing)
+                    return Promise.reject(new AlreadyFollowingError())
+                return this.sqliteManager.followUser(followerId, followedId)
+            })
     }
 
     async getFollowersByUserId(userId: number): Promise<Omit<User, 'password'>[]> {
@@ -73,7 +74,7 @@ export class UserService {
             await this.sqliteManager.unfollowUser(followerId, userIdToUnfollow);
             return Promise.resolve();
         } catch (err) {
-            throw new Error('Error while unfollowing user: ' + err);
+            return Promise.reject('Error while unfollowing user: ' + err);
         }
     }
 
@@ -108,5 +109,9 @@ export class UserService {
             .then(user => !user ? Promise.reject(new UserNotExistsError()) : user)
             .then(async user => bcrypt.compare(password, user.password as string)
                 .then(equal => !equal ? Promise.reject(new UserIncorrectPasswordError()) : jwt.generateTokens(user.id, user.email as string)));
+    }
+
+    async userExists(id: number): Promise<boolean> {
+        return this.sqliteManager.userExists(id);
     }
 }

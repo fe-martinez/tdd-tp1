@@ -76,3 +76,6 @@ Además, se cuenta con refresh tokens para combatir el tiempo de vida limitado d
 * El usuario se crea sin foto, pero requiere los demás campos.
 * Se puede actualizar: foto, nombre, género, email, contraseña.
 * Usamos una base de datos SQLite3. Los datos persisten al desconectar el servidor.
+
+# Arquitectura
+![Arquitectura](https://gitlab.com/ramirogestoso/tdd-tp1/-/raw/Dev/arquitectura.png)

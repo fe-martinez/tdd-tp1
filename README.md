@@ -19,20 +19,21 @@
 # Instalación del proyecto
 
 ## Linux (Ubuntu):
+
 * Instalar nvm: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash`
 * Probablemente antes de correr el siguiente comando haya que refrescar la terminal, sino no va a reconocer `nvm`
 * Instalar Node: `nvm install 20`
 * Verificar la instalacion con `node -v` y `npm -v`
 * Instalar Typescript: `npm install -D typescript`
 * Instalar Docker:
-`sudo apt install apt-transport-https ca-certificates curl software-properties-common`
-`curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -`
-`sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"`
-`sudo apt update`
-`sudo apt install docker-ce`
+    * `sudo apt install apt-transport-https ca-certificates curl software-properties-common`
+    * `curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -`
+    * `sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"`
+    * `sudo apt update`
+    * `sudo apt install docker-ce`
 * Instalar Docker Compose:
-`sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d '"' -f 4)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
-`sudo chmod +x /usr/local/bin/docker-compose`
+    * `sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d '"' -f 4)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
+    * `sudo chmod +x /usr/local/bin/docker-compose`
 
 
 * Clonar el repositorio
@@ -54,11 +55,12 @@
 * Ir a la carpeta tdd-tp1 (o el nombre que usted haya elegido)
 * Correr npm install
 
-Correr el proyecto sin Docker:
+#### Correr el proyecto sin Docker:
 * Correr el comando npx ts-node src/server.ts
-Correr el proyecto con Docker Compose:
-* sudo docker-compose up --build
-En Windows es necesario tener abierto Docker Desktop para poder correr los comandos.
+
+#### Correr el proyecto con Docker Compose:
+* `sudo docker-compose up --build`
+(En Windows es necesario tener abierto Docker Desktop para poder correr los comandos).
 
 # Objetivo del trabajo
 Implementar una API Rest correspondiente a un mini portal social que permita registrarse como un nuevo usuario, cargar su perfil, poder buscar otros perfiles y seguirlos y dejar de seguirlos, ver mi listado de seguidores y de seguidos. 
